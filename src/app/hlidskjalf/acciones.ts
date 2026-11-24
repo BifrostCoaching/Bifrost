@@ -225,6 +225,7 @@ export async function guardarContacto(_prev: EstadoPanel, fd: FormData): Promise
     { clave: "email", valor: email },
     { clave: "whatsapp", valor: txt(fd, "whatsapp", 40) },
     { clave: "instagram", valor: txt(fd, "instagram", 120) },
+    { clave: "linkedin", valor: txt(fd, "linkedin", 200) },
   ].map((f) => ({ ...f, updated_at: new Date().toISOString() }));
   const { error } = await supabase.from("ajustes").upsert(filas, { onConflict: "clave" });
   if (error) return { ok: false, mensaje: `No se pudo guardar: ${error.message}` };

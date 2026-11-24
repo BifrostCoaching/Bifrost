@@ -20,5 +20,5 @@ grant select, insert, update, delete on public.ajustes to authenticated;
 grant all on public.ajustes to service_role;
 
 insert into public.ajustes (clave, valor) values
-  ('email', ''), ('whatsapp', ''), ('instagram', '')
+  ('email', ''), ('whatsapp', ''), ('instagram', ''), ('linkedin', '')
 on conflict (clave) do nothing;

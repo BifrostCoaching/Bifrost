@@ -60,7 +60,7 @@ Entrás desde el pie del sitio (**Ingreso del equipo**) o en `/hlidskjalf`.
 - **Eventos**: actividades sueltas que aparecen en el Calendario.
 - **Interesados**: quién tocó "Me interesa" y en qué taller. El equipo de ventas marca a cada persona como contactada, inscripta o descartada, y puede dejar notas.
 - **Consultas**: los mensajes del formulario de contacto.
-- **Contacto**: el email, WhatsApp e Instagram que aparecen en "¿Hablamos?".
+- **Contacto**: el email, WhatsApp, Instagram y LinkedIn que aparecen en "¿Hablamos?".
 - **Blog**: escribís artículos. Quedan como borrador hasta que tildás "Publicado en el sitio".
 - **Comunidad**: lo que deja la gente en Yggdrasil, el pozo de Urd y Hvergelmir se publica enseguida; desde acá lo retirás si no respeta las normas. Las reflexiones del pozo de Mímir esperan que las apruebes. Ahí también está **Frases de Ratatoskr**, para cambiar lo que dice la ardilla.
 

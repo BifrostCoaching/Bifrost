@@ -14,7 +14,7 @@ export default async function ContactoPanel() {
           Falta crear la tabla: corré el archivo 04-contacto.sql en Supabase &gt; SQL Editor.
         </p>
       ) : (
-        <FormContactoPanel email={v.email ?? ""} whatsapp={v.whatsapp ?? ""} instagram={v.instagram ?? ""} />
+        <FormContactoPanel email={v.email ?? ""} whatsapp={v.whatsapp ?? ""} instagram={v.instagram ?? ""} linkedin={v.linkedin ?? ""} />
       )}
     </>
   );
