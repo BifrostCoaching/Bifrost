@@ -2,7 +2,7 @@ export const SITE_URL = (process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3
 
 export const CALENDAR_ID =
   process.env.NEXT_PUBLIC_GOOGLE_CALENDAR_ID ||
-  "affb255c54ac8925894fc9817997f70ed3ead0a267c37a2d8c41b2c7ece7b2af@group.calendar.google.com";
+  "2621bf8a432143553116176bfdd69319ff6157c0c356ed51cd210ed11b74e6b2@group.calendar.google.com";
 
 export const ZONA = "America/Argentina/Buenos_Aires";
 
