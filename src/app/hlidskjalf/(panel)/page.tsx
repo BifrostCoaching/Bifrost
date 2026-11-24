@@ -9,11 +9,12 @@ export default async function Resumen() {
     const { count } = await q;
     return count ?? 0;
   };
-  const [talleres, nuevos, inscriptos, consultas] = await Promise.all([
+  const [talleres, nuevos, inscriptos, consultas, reflexiones] = await Promise.all([
     contar("talleres", ["publicado", true]),
     contar("interesados", ["estado", "nuevo"]),
     contar("interesados", ["estado", "inscripto"]),
     contar("consultas", ["leida", false]),
+    contar("reflexiones", ["estado", "pendiente"]),
   ]);
   return (
     <>
@@ -32,6 +33,10 @@ export default async function Resumen() {
         <Link href="/hlidskjalf/consultas" className="tarjeta">
           <span className="ceja">Consultas sin leer</span>
           <h2>{consultas}</h2>
+        </Link>
+        <Link href="/hlidskjalf/comunidad" className="tarjeta">
+          <span className="ceja">Reflexiones por aprobar</span>
+          <h2>{reflexiones}</h2>
         </Link>
       </div>
     </>

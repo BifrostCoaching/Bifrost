@@ -8,9 +8,7 @@ import { rango } from "@/lib/format";
 export const revalidate = 60;
 
 const PRONTO = [
-  { titulo: "Blog", texto: "Pensamientos sobre lenguaje, emociones, liderazgo y aprendizaje." },
   { titulo: "Profesionales", texto: "Coaches, asesores de imagen, contadores y otros profesionales que trabajan con Bifröst." },
-  { titulo: "Comunidad", texto: "El foro para conversar y el muro donde cada persona cuenta lo que vivió." },
   { titulo: "Campus", texto: "Tu espacio personal: tu árbol de propósitos, tu agenda y tus talleres." },
   { titulo: "Dar por dar", texto: "Espacios comunitarios que se suman: refugios, comedores, grupos ambientales y más." },
 ];
@@ -68,7 +66,9 @@ export default async function Inicio() {
           <div className="fila">
             <Tarjeta href="/que-hacemos" titulo="Qué hacemos" texto="Nuestro enfoque, cómo trabajamos y los pilares en los que nos apoyamos." />
             <Tarjeta href="/talleres" titulo="Talleres" texto={resumenTalleres} />
+            <Tarjeta href="/blog" titulo="Blog" texto="Pensamientos sobre lenguaje, emociones, liderazgo y aprendizaje." />
             <Tarjeta href="/calendario" titulo="Calendario" texto="Las próximas fechas y la proyección del año." />
+            <Tarjeta href="/comunidad" titulo="Comunidad" texto="El foro para conversar y el muro donde cada persona cuenta lo que vivió." />
             {PRONTO.map((p) => (
               <div key={p.titulo} className="card-link en-bg pronto">
                 <span className="titulo">{p.titulo}</span>

@@ -2,7 +2,7 @@
 
 Sitio de Bifröst: un puente entre donde estás y donde querés llegar.
 
-Esta primera etapa incluye **Inicio**, **Talleres** (con el botón "Me interesa" para dejar los datos), **Calendario** (con el calendario de Google de Bifröst) y **Hliðskjálf**, el panel del equipo con login. Comunidad y Campus vienen en la etapa siguiente.
+Incluye **Inicio**, **Talleres** (con el botón "Me interesa" para dejar los datos), **Blog**, **Calendario** (con el calendario de Google de Bifröst), **Comunidad** (Yggdrasil y sus tres pozos) y **Hliðskjálf**, el panel del equipo con login. Campus viene más adelante.
 
 Hecho con Next.js (se publica en Vercel) y Supabase (login y base de datos).
 
@@ -25,6 +25,7 @@ Recomendación: activá la verificación en dos pasos en GitHub, Vercel y Supaba
 
 1. Creá un proyecto en [supabase.com](https://supabase.com) (región São Paulo).
 2. En **SQL Editor**, pegá el contenido de [`supabase/schema.sql`](supabase/schema.sql) y ejecutalo. Crea las tablas, las reglas de seguridad y carga los dos talleres.
+   - Después, pegá y ejecutá también [`supabase/02-blog-comunidad.sql`](supabase/02-blog-comunidad.sql). Crea las tablas del Blog y de la Comunidad.
    - El script agrega `bifrost1203@gmail.com` como integrante del equipo. Para sumar a alguien más: `insert into equipo (email, nombre) values ('email@ejemplo.com', 'Nombre');`
 3. En **Authentication > Sign In / Providers**, desactivá **Allow new users to sign up** (así nadie puede crearse una cuenta solo).
 4. En **Authentication > Users > Add user**, creá el usuario `bifrost1203@gmail.com` con una contraseña fuerte. Con ese email y contraseña entrás al panel.
@@ -59,6 +60,8 @@ Entrás desde el pie del sitio (**Ingreso del equipo**) o en `/hlidskjalf`.
 - **Eventos**: actividades sueltas que aparecen en el Calendario.
 - **Interesados**: quién tocó "Me interesa" y en qué taller. El equipo de ventas marca a cada persona como contactada, inscripta o descartada, y puede dejar notas.
 - **Consultas**: los mensajes del formulario de contacto.
+- **Blog**: escribís artículos. Quedan como borrador hasta que tildás "Publicado en el sitio".
+- **Comunidad**: lo que deja la gente en Yggdrasil, el pozo de Urd y Hvergelmir se publica enseguida; desde acá lo retirás si no respeta las normas. Las reflexiones del pozo de Mímir esperan que las apruebes.
 
 ---
 
