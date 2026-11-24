@@ -1,7 +1,7 @@
 import "server-only";
 import { createClient } from "@supabase/supabase-js";
 import type { DatosContacto } from "./site";
-import type { Evento, Experiencia, Post, Reflexion, Sueno, Taller, TemaForo } from "./types";
+import type { Convocatoria, Espacio, Evento, Experiencia, Post, Reflexion, Sueno, Taller, TemaForo } from "./types";
 
 /** Cliente de solo lectura para las páginas públicas (sin sesión, respeta RLS). */
 function publico() {
@@ -150,4 +150,43 @@ export async function datosContacto(): Promise<DatosContacto> {
   if (error) return vacio; // si la tabla todavía no existe, se muestra [PENDIENTE]
   for (const { clave, valor } of (data ?? []) as { clave: keyof DatosContacto; valor: string }[]) vacio[clave] = valor ?? "";
   return vacio;
+}
+
+// ───────── Dar por dar ─────────
+export type DarPorDar = { espacios: Espacio[]; convocatorias: (Convocatoria & { espacio: Espacio | null })[] };
+
+const DEMO_DPD: DarPorDar = {
+  espacios: [
+    ["Refugios de animales", "[Nombre del espacio]"], ["Medioambiente", "[Nombre del espacio]"], ["Comedores", "[Nombre del espacio]"],
+    ["Educación", "[Nombre del espacio]"], ["Salud", "[Nombre del espacio]"],
+  ].map(([tipo, nombre], i) => ({ id: `esp${i}`, nombre, tipo, zona: "[Zona]", contacto: "", descripcion: "", estado: "publicado", created_at: "" })),
+  convocatorias: [],
+};
+DEMO_DPD.convocatorias = [
+  ["[PENDIENTE] Jornada de adopción", "[PENDIENTE] Voluntarios, alimento, mantas…", 0],
+  ["[PENDIENTE] Plantación o limpieza", "[PENDIENTE] Manos, herramientas, plantines…", 1],
+  ["[PENDIENTE] Colecta de alimentos", "[PENDIENTE] Alimentos no perecederos, ayuda en la cocina…", 2],
+].map(([titulo, necesita, k], i) => ({
+  id: `conv${i}`, espacio_id: `esp${k}`, titulo: String(titulo), inicio: null, fin: null, necesita: String(necesita), publicado: true,
+  espacio: DEMO_DPD.espacios[Number(k)],
+}));
+
+export async function darPorDarPublico(): Promise<DarPorDar> {
+  const db = publico();
+  if (!db) return process.env.BIFROST_DEMO === "1" ? DEMO_DPD : { espacios: [], convocatorias: [] };
+  const [e, c] = await Promise.all([
+    db.from("espacios").select("id, nombre, tipo, zona, contacto, descripcion, estado, created_at").eq("estado", "publicado").order("nombre"),
+    db.from("convocatorias").select("*").eq("publicado", true).order("inicio", { ascending: true, nullsFirst: false }),
+  ]);
+  if (e.error || c.error) {
+    console.error("dar por dar:", e.error?.message ?? c.error?.message);
+    return { espacios: [], convocatorias: [] };
+  }
+  const espacios = (e.data ?? []) as Espacio[];
+  const porId = new Map(espacios.map((x) => [x.id, x]));
+  const hoy = new Date().toISOString().slice(0, 10);
+  const convocatorias = ((c.data ?? []) as Convocatoria[])
+    .filter((x) => porId.has(x.espacio_id) && (!(x.fin ?? x.inicio) || (x.fin ?? x.inicio)! >= hoy))
+    .map((x) => ({ ...x, espacio: porId.get(x.espacio_id) ?? null }));
+  return { espacios, convocatorias };
 }

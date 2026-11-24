@@ -1,7 +1,7 @@
 import { createServerClient } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
 
-/** Refresca la sesión del equipo y protege el panel Hliðskjálf. */
+/** Refresca la sesión y protege el panel Hliðskjálf y el Campus. */
 export async function proxy(request: NextRequest) {
   let response = NextResponse.next({ request });
   const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
@@ -22,14 +22,16 @@ export async function proxy(request: NextRequest) {
   });
 
   const { data: { user } } = await supabase.auth.getUser();
-  const esLogin = request.nextUrl.pathname.startsWith("/hlidskjalf/login");
-  if (!user && !esLogin) {
+  const ruta = request.nextUrl.pathname;
+  const esCampus = ruta === "/campus" || ruta.startsWith("/campus/");
+  const libre = ruta.startsWith("/hlidskjalf/login") || ruta.startsWith("/campus/ingresar") || ruta.startsWith("/campus/bienvenida");
+  if (!user && !libre) {
     const destino = request.nextUrl.clone();
-    destino.pathname = "/hlidskjalf/login";
+    destino.pathname = esCampus ? "/campus/ingresar" : "/hlidskjalf/login";
     destino.search = "";
     return NextResponse.redirect(destino);
   }
   return response;
 }
 
-export const config = { matcher: ["/hlidskjalf/:path*"] };
+export const config = { matcher: ["/hlidskjalf/:path*", "/campus", "/campus/:path*"] };

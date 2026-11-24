@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { Portada } from "@/components/Portada";
 import { Contacto } from "@/components/Contacto";
-import { eventosPublicados, talleresPublicados } from "@/lib/datos";
+import { darPorDarPublico, eventosPublicados, talleresPublicados } from "@/lib/datos";
 import { fecha, hoyBA, sumarDias } from "@/lib/format";
 import { CALENDAR_ID, ZONA } from "@/lib/site";
 
@@ -17,7 +17,7 @@ const DIAS = ["Lun", "Mar", "Mié", "Jue", "Vie", "Sáb", "Dom"];
 type Props = { searchParams: Promise<{ mes?: string }> };
 
 export default async function Calendario({ searchParams }: Props) {
-  const [talleres, eventos] = await Promise.all([talleresPublicados(), eventosPublicados()]);
+  const [talleres, eventos, dar] = await Promise.all([talleresPublicados(), eventosPublicados(), darPorDarPublico()]);
   const hoy = hoyBA();
 
   const actividades: Actividad[] = [
@@ -28,6 +28,10 @@ export default async function Calendario({ searchParams }: Props) {
     ...eventos.filter((e) => e.inicio).map((e) => ({
       id: e.id, nombre: e.titulo, inicio: e.inicio!, fin: e.fin ?? e.inicio!, pago: e.tipo === "pago",
       badge: e.tipo === "pago" ? "Evento pago" : "Evento gratuito", detalle: [e.organiza, e.modalidad].filter(Boolean).join(" · "),
+    })),
+    ...dar.convocatorias.filter((c) => c.inicio).map((c) => ({
+      id: c.id, nombre: c.titulo, inicio: c.inicio!, fin: c.fin ?? c.inicio!, pago: false,
+      badge: "Dar por dar", detalle: [c.espacio?.nombre, c.espacio?.zona].filter(Boolean).join(" · "), href: "/dar-por-dar#eventos",
     })),
   ].sort((a, b) => a.inicio.localeCompare(b.inicio));
 

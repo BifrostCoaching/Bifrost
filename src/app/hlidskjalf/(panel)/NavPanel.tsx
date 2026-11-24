@@ -8,6 +8,8 @@ const LINKS = [
   ["/hlidskjalf/eventos", "Eventos"],
   ["/hlidskjalf/blog", "Blog"],
   ["/hlidskjalf/comunidad", "Comunidad"],
+  ["/hlidskjalf/campus", "Campus"],
+  ["/hlidskjalf/dar-por-dar", "Dar por dar"],
   ["/hlidskjalf/interesados", "Interesados"],
   ["/hlidskjalf/consultas", "Consultas"],
   ["/hlidskjalf/contacto", "Contacto"],

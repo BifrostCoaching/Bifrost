@@ -69,3 +69,15 @@ export type Sueno = { id: string; texto: string; estado: EstadoComunidad; create
 export type Experiencia = { id: string; nombre: string; taller: string; tipo: string; texto: string; estado: EstadoComunidad; created_at: string; autor?: string };
 export type Reflexion = { id: string; nombre: string; titulo: string; texto: string; estado: EstadoComunidad; created_at: string; autor?: string };
 export type TemaForo = { id: string; tema: string; nombre: string; titulo: string; texto: string; estado: EstadoComunidad; created_at: string; autor?: string };
+
+// ───────── Dar por dar ─────────
+export type Espacio = { id: string; nombre: string; tipo: string; zona: string; contacto: string; descripcion: string; estado: EstadoComunidad; created_at: string };
+export type Convocatoria = { id: string; espacio_id: string; titulo: string; inicio: string | null; fin: string | null; necesita: string; publicado: boolean };
+
+// ───────── Campus ─────────
+export type EstadoInscripcion = "pendiente" | "confirmada" | "cancelada";
+export type Participante = { id: string; email: string; nombre: string; created_at: string };
+export type Inscripcion = { id: string; participante_id: string; taller_id: string; estado: EstadoInscripcion; created_at: string };
+export type Modulo = { id: string; taller_id: string; numero: number; titulo: string; clases: string; materiales: string };
+export type Cuando = "semana" | "mes" | "anio" | "largo";
+export type ItemAgenda = { id: string; texto: string; cuando: Cuando; created_at: string };

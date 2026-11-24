@@ -53,3 +53,15 @@ export function imagenesTaller(slug: string): string[] {
   if (slug.includes("presupuesto")) return ["/img/presupuesto-1.jpg", "/img/presupuesto-2.jpg", "/img/presupuesto-3.jpg"];
   return ["/img/portada-1.jpg", "/img/portada-2.jpg", "/img/portada-3.jpg"];
 }
+
+/** Convierte un dato de contacto suelto (email, WhatsApp, @usuario o link) en un link. */
+export function linkContacto(v: string): string | null {
+  const t = v.trim();
+  if (!t) return null;
+  if (/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(t)) return `mailto:${t}`;
+  if (/^https?:\/\//i.test(t)) return t;
+  if (/^@[\w.]+$/.test(t)) return `https://instagram.com/${t.slice(1)}`;
+  const digitos = t.replace(/\D/g, "");
+  if (digitos.length >= 8 && /^[+\d\s()-]+$/.test(t)) return `https://wa.me/${digitos}`;
+  return null;
+}

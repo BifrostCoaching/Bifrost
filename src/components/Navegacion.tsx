@@ -8,6 +8,8 @@ const LINKS = [
   { href: "/blog", texto: "Blog" },
   { href: "/calendario", texto: "Calendario" },
   { href: "/comunidad", texto: "Comunidad" },
+  { href: "/campus", texto: "Campus" },
+  { href: "/dar-por-dar", texto: "Dar por dar" },
 ];
 
 export function Navegacion() {
