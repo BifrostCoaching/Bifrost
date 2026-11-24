@@ -11,8 +11,8 @@ export function FormAcceso({ talleres, email, nombre, taller, estado: estadoInic
     <form action={accion} className="form caja" id="acceso">
       <h2 style={{ margin: 0 }}>Dar acceso al campus</h2>
       <p className="apagado" style={{ margin: 0 }}>
-        Se genera un link para que la persona elija su contraseña. Mandáselo vos por WhatsApp o email. Si ya tenía acceso, el link le sirve
-        para elegir una contraseña nueva.
+        Le llega un mail automático al email que pongas, con un botón para elegir su contraseña y entrar. Si ya tenía acceso, le sirve
+        para elegir una contraseña nueva. Si el mail no sale, acá aparece el link para mandárselo a mano.
       </p>
       <div className="doble">
         <label>
@@ -60,7 +60,7 @@ export function FormAcceso({ talleres, email, nombre, taller, estado: estadoInic
         </div>
       )}
       <div>
-        <button className="boton" disabled={creando}>{creando ? "Creando…" : "Crear link de acceso"}</button>
+        <button className="boton" disabled={creando}>{creando ? "Enviando…" : "Dar acceso y mandar mail"}</button>
       </div>
     </form>
   );

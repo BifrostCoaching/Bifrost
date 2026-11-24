@@ -6,6 +6,7 @@ import { createAdminClient } from "@/lib/supabase/admin";
 import { createClient } from "@/lib/supabase/server";
 import { requireEquipo } from "@/lib/supabase/equipo";
 import { slugify } from "@/lib/format";
+import { mandarAccesoCampus } from "@/lib/mail";
 import { borrarQuitadas, CARPETAS, leerImagenes, subirArchivo, type Carpeta } from "@/lib/imagenes";
 import type { EstadoInteresado } from "@/lib/types";
 
@@ -422,7 +423,7 @@ export async function borrarConvocatoria(fd: FormData) {
 
 // ───────── Campus ─────────
 
-export type EstadoAcceso = { ok: boolean; mensaje: string; link?: string } | null;
+export type EstadoAcceso = { ok: boolean; mensaje: string; link?: string; enviado?: boolean } | null;
 
 function revalidarCampus() {
   revalidatePath("/campus");
@@ -430,8 +431,8 @@ function revalidarCampus() {
 }
 
 /**
- * Crea (o renueva) el acceso de una persona al campus y devuelve un link para mandarle por WhatsApp o email.
- * El link la lleva a elegir su contraseña. No se manda ningún mail automático.
+ * Crea (o renueva) el acceso de una persona al campus y le manda por mail el link para elegir su contraseña.
+ * Si el mail no sale (o el envío no está configurado), devuelve el link para mandarlo a mano.
  */
 export async function darAcceso(_prev: EstadoAcceso, fd: FormData): Promise<EstadoAcceso> {
   const { supabase } = await requireEquipo();
@@ -463,10 +464,15 @@ export async function darAcceso(_prev: EstadoAcceso, fd: FormData): Promise<Esta
     if (e2) return { ok: false, mensaje: `Se creó el acceso, pero no la inscripción: ${e2.message}` };
   }
   revalidarCampus();
+  const link = res.data.properties.action_link;
+  let taller = "";
+  if (tallerId) taller = (await supabase.from("talleres").select("nombre").eq("id", tallerId).maybeSingle()).data?.nombre ?? "";
+  const fallo = await mandarAccesoCampus(email, nombre || previo?.nombre || "", link, taller);
+  if (!fallo) return { ok: true, enviado: true, mensaje: `Listo. Le mandamos el acceso por mail a ${email}. El link vence en 24 horas.` };
   return {
     ok: true,
-    mensaje: `Listo. Mandale este link a ${nombre || email} (sirve una sola vez y vence en 24 horas):`,
-    link: res.data.properties.action_link,
+    mensaje: `${fallo} Mandale este link a ${nombre || email} por WhatsApp o email (sirve una sola vez y vence en 24 horas):`,
+    link,
   };
 }
 
