@@ -84,6 +84,17 @@ export type Modulo = { id: string; taller_id: string; numero: number; titulo: st
 export type Cuando = "semana" | "mes" | "anio" | "largo";
 export type ItemAgenda = { id: string; texto: string; cuando: Cuando; created_at: string };
 
+export type Profesional = {
+  id: string;
+  nombre: string;
+  oficio: string;
+  descripcion: string;
+  contacto: string;
+  imagen: string;
+  publicado: boolean;
+  orden: number;
+};
+
 export type Servicio = {
   id: string;
   nombre: string;

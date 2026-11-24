@@ -28,7 +28,7 @@ export function EditorImagenes({
   max = 8,
   ayuda,
 }: {
-  carpeta: "talleres" | "eventos" | "servicios";
+  carpeta: "talleres" | "eventos" | "servicios" | "profesionales";
   iniciales: string[];
   max?: number;
   ayuda?: string;

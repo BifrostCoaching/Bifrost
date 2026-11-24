@@ -15,7 +15,7 @@ function txt(fd: FormData, k: string, max: number) {
   return String(fd.get(k) ?? "").trim().slice(0, max);
 }
 
-/** Código anónimo de este navegador, para que cada persona pueda borrar lo que dejó. */
+/** Código anónimo de este navegador, para frenar abusos (cuántas publicaciones deja seguidas). */
 async function yo(): Promise<string> {
   const jar = await cookies();
   let id = jar.get(COOKIE)?.value;
@@ -80,20 +80,15 @@ export async function abrirTema(_p: EstadoCom, fd: FormData): Promise<EstadoCom>
   return guardar("foro", { tema: txt(fd, "tema", 40) || "General", nombre: txt(fd, "nombre", 80) || "Anónimo", titulo, texto: txt(fd, "texto", 2000) }, "Tu tema ya está en Hvergelmir.");
 }
 
-/** Borra algo: quien lo dejó (mismo navegador) o el equipo de Bifröst. */
+/** Retira algo del sitio. Solo el equipo de Bifröst: quien lo publicó no puede borrarlo. */
 export async function borrar(fd: FormData) {
   const tabla = txt(fd, "tabla", 20) as Tabla;
   const id = txt(fd, "id", 60);
   if (!TABLAS.includes(tabla) || !id) return;
   const supabase = await createClient();
   const { data: esEquipo } = await supabase.rpc("es_equipo");
-  const db = createAdminClient();
-  if (esEquipo) {
-    await db.from(tabla).update({ estado: "oculto" }).eq("id", id);
-  } else {
-    const autor = (await cookies()).get(COOKIE)?.value;
-    if (!autor) return;
-    await db.from(tabla).delete().eq("id", id).eq("autor", autor);
-  }
+  if (!esEquipo) return;
+  await supabase.from(tabla).update({ estado: "oculto" }).eq("id", id);
   revalidatePath("/comunidad");
+  revalidatePath("/hlidskjalf/comunidad");
 }

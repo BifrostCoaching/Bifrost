@@ -4,7 +4,7 @@ import { supabaseUrl } from "@/lib/supabase/env";
 
 /** Carpeta pública de Supabase Storage donde el equipo sube fotos (ver supabase/06). */
 export const BUCKET = "imagenes";
-export const CARPETAS = ["talleres", "eventos", "servicios"] as const;
+export const CARPETAS = ["talleres", "eventos", "servicios", "profesionales"] as const;
 export type Carpeta = (typeof CARPETAS)[number];
 export const MAX_BYTES = 4 * 1024 * 1024;
 const TIPOS: Record<string, string> = { "image/jpeg": "jpg", "image/png": "png", "image/webp": "webp" };
@@ -43,7 +43,7 @@ export function leerImagenes(valor: FormDataEntryValue | null, max = 12): string
   }
   if (!Array.isArray(lista)) return [];
   const p = prefijo();
-  const ok = /^(talleres|eventos|servicios)\/[0-9a-f-]{36}\.(jpg|png|webp)$/;
+  const ok = /^(talleres|eventos|servicios|profesionales)\/[0-9a-f-]{36}\.(jpg|png|webp)$/;
   return [...new Set(lista.filter((u): u is string => typeof u === "string" && u.startsWith(p) && ok.test(u.slice(p.length))))].slice(0, max);
 }
 
