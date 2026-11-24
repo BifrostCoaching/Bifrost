@@ -1,5 +1,6 @@
 import "server-only";
 import { createClient } from "@supabase/supabase-js";
+import type { DatosContacto } from "./site";
 import type { Evento, Experiencia, Post, Reflexion, Sueno, Taller, TemaForo } from "./types";
 
 /** Cliente de solo lectura para las páginas públicas (sin sesión, respeta RLS). */
@@ -138,4 +139,15 @@ export async function comunidadPublica(): Promise<Comunidad> {
     // Si la tabla de frases todavía no existe, Ratatoskr usa las frases por defecto.
     frases: ((fr.data ?? []) as { texto: string }[]).map((x) => x.texto).filter(Boolean),
   };
+}
+
+// ───────── Contacto ─────────
+export async function datosContacto(): Promise<DatosContacto> {
+  const vacio: DatosContacto = { email: "", whatsapp: "", instagram: "" };
+  const db = publico();
+  if (!db) return vacio;
+  const { data, error } = await db.from("ajustes").select("clave, valor").in("clave", ["email", "whatsapp", "instagram"]);
+  if (error) return vacio; // si la tabla todavía no existe, se muestra [PENDIENTE]
+  for (const { clave, valor } of (data ?? []) as { clave: keyof DatosContacto; valor: string }[]) vacio[clave] = valor ?? "";
+  return vacio;
 }

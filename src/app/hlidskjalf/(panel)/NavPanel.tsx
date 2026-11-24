@@ -10,6 +10,7 @@ const LINKS = [
   ["/hlidskjalf/comunidad", "Comunidad"],
   ["/hlidskjalf/interesados", "Interesados"],
   ["/hlidskjalf/consultas", "Consultas"],
+  ["/hlidskjalf/contacto", "Contacto"],
 ];
 
 export function NavPanel() {
