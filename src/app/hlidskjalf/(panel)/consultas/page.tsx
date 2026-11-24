@@ -22,6 +22,10 @@ export default async function ConsultasPanel() {
                   {c.motivo || "Sin motivo"} ·{" "}
                   {new Date(c.created_at).toLocaleString("es-AR", { timeZone: "America/Argentina/Buenos_Aires", dateStyle: "short", timeStyle: "short" })}
                 </small>
+                <br />
+                <a href={`/hlidskjalf/campus?${new URLSearchParams({ email: c.email, nombre: c.nombre })}#acceso`} style={{ fontSize: "0.9rem", fontWeight: 600 }}>
+                  Dar acceso al campus →
+                </a>
               </div>
               <form action={marcarConsulta}>
                 <input type="hidden" name="id" value={c.id} />

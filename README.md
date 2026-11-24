@@ -44,6 +44,8 @@ Recomendación: activá la verificación en dos pasos en GitHub, Vercel y Supaba
    | `NEXT_PUBLIC_SUPABASE_ANON_KEY` | Supabase · anon public |
    | `SUPABASE_SERVICE_ROLE_KEY` | Supabase · service_role (secreta) |
    | `NEXT_PUBLIC_GOOGLE_CALENDAR_ID` | Ya viene cargado con el calendario de Bifröst |
+   | `GMAIL_USER` | (Opcional) La cuenta de Gmail que manda los accesos al campus, por ejemplo `bifrost1203@gmail.com` |
+   | `GMAIL_APP_PASSWORD` | (Opcional, secreta) Una contraseña de aplicación de esa cuenta: Google > Seguridad > Verificación en dos pasos > Contraseñas de aplicaciones |
 
 3. Publicá (**Deploy**). Si después cambiás alguna variable, volvé a publicar.
 
@@ -64,7 +66,7 @@ Entrás desde el pie del sitio (**Ingreso del equipo**) o en `/hlidskjalf`.
 - **Interesados**: quién tocó "Me interesa" y en qué taller. El equipo de ventas marca a cada persona como contactada, inscripta o descartada, y puede dejar notas.
 - **Consultas**: los mensajes del formulario de contacto.
 - **Contacto**: el email, WhatsApp, Instagram y LinkedIn que aparecen en "¿Hablamos?".
-- **Campus**: das acceso a cada participante (se genera un link para mandarle por WhatsApp o email), confirmás inscripciones y cargás los módulos de cada taller con sus clases y materiales. Desde **Interesados** también hay un atajo "Dar acceso al campus".
+- **Campus**: das acceso a cada participante (le llega un mail automático para elegir su contraseña; si el mail no está configurado, se genera un link para mandarle a mano), confirmás inscripciones y cargás los módulos de cada taller con sus clases y materiales. Desde **Interesados** y **Consultas** también hay un atajo "Dar acceso al campus".
 - **Dar por dar**: publicás los espacios comunitarios que llegan por el formulario y cargás sus convocatorias.
 - **Blog**: escribís artículos. Quedan como borrador hasta que tildás "Publicado en el sitio".
 - **Comunidad**: lo que deja la gente en Yggdrasil, el pozo de Urd y Hvergelmir se publica enseguida; desde acá lo retirás si no respeta las normas, corregís la ortografía o lo borrás para siempre. Quien lo publicó no puede borrarlo. Las reflexiones del pozo de Mímir esperan que las apruebes. Ahí también está **Frases de Ratatoskr**, para cambiar lo que dice la ardilla.
