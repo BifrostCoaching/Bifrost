@@ -1,5 +1,6 @@
 import "server-only";
 import { createClient } from "@supabase/supabase-js";
+import type { DatosContacto } from "./site";
 import type { Evento, Experiencia, Post, Reflexion, Sueno, Taller, TemaForo } from "./types";
 
 /** Cliente de solo lectura para las páginas públicas (sin sesión, respeta RLS). */
@@ -94,7 +95,7 @@ export async function postPorSlug(slug: string): Promise<Post | null> {
 }
 
 // ───────── Comunidad ─────────
-export type Comunidad = { suenos: Sueno[]; experiencias: Experiencia[]; reflexiones: Reflexion[]; foro: TemaForo[] };
+export type Comunidad = { suenos: Sueno[]; experiencias: Experiencia[]; reflexiones: Reflexion[]; foro: TemaForo[]; frases: string[] };
 
 const DEMO_COMUNIDAD: Comunidad = {
   suenos: ["[el sueño de alguien de la comunidad]", "[otro sueño]", "[otro sueño]", "[otro sueño]"].map((texto, i) => ({ id: `s${i}`, texto, estado: "publicado", created_at: "" })),
@@ -116,16 +117,18 @@ const DEMO_COMUNIDAD: Comunidad = {
     ["Emociones", "Las emociones que nos frenan antes de empezar"],
     ["General", "Presentate: ¿desde dónde llegás a Bifröst?"],
   ].map(([tema, titulo], i) => ({ id: `f${i}`, tema, nombre: "[Nombre]", titulo, texto: "", estado: "publicado", created_at: "" })),
+  frases: [],
 };
 
 export async function comunidadPublica(): Promise<Comunidad> {
   const db = publico();
-  if (!db) return process.env.BIFROST_DEMO === "1" ? DEMO_COMUNIDAD : { suenos: [], experiencias: [], reflexiones: [], foro: [] };
-  const [s, e, r, f] = await Promise.all([
+  if (!db) return process.env.BIFROST_DEMO === "1" ? DEMO_COMUNIDAD : { suenos: [], experiencias: [], reflexiones: [], foro: [], frases: [] };
+  const [s, e, r, f, fr] = await Promise.all([
     db.from("suenos").select("id, texto, estado, created_at").eq("estado", "publicado").order("created_at").limit(66),
     db.from("experiencias").select("id, nombre, taller, tipo, texto, estado, created_at").eq("estado", "publicado").order("created_at", { ascending: false }).limit(60),
     db.from("reflexiones").select("id, nombre, titulo, texto, estado, created_at").eq("estado", "publicado").order("created_at").limit(500),
     db.from("foro").select("id, tema, nombre, titulo, texto, estado, created_at").eq("estado", "publicado").order("created_at", { ascending: false }).limit(60),
+    db.from("frases_ratatoskr").select("texto").eq("activa", true).order("orden").order("created_at"),
   ]);
   for (const x of [s, e, r, f]) if (x.error) console.error("comunidad:", x.error.message);
   return {
@@ -133,5 +136,18 @@ export async function comunidadPublica(): Promise<Comunidad> {
     experiencias: (e.data ?? []) as Experiencia[],
     reflexiones: (r.data ?? []) as Reflexion[],
     foro: (f.data ?? []) as TemaForo[],
+    // Si la tabla de frases todavía no existe, Ratatoskr usa las frases por defecto.
+    frases: ((fr.data ?? []) as { texto: string }[]).map((x) => x.texto).filter(Boolean),
   };
+}
+
+// ───────── Contacto ─────────
+export async function datosContacto(): Promise<DatosContacto> {
+  const vacio: DatosContacto = { email: "", whatsapp: "", instagram: "", linkedin: "" };
+  const db = publico();
+  if (!db) return vacio;
+  const { data, error } = await db.from("ajustes").select("clave, valor").in("clave", ["email", "whatsapp", "instagram", "linkedin"]);
+  if (error) return vacio; // si la tabla todavía no existe, se muestra [PENDIENTE]
+  for (const { clave, valor } of (data ?? []) as { clave: keyof DatosContacto; valor: string }[]) vacio[clave] = valor ?? "";
+  return vacio;
 }

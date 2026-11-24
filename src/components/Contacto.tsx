@@ -1,7 +1,22 @@
-import { CONTACTO } from "@/lib/site";
+import { datosContacto } from "@/lib/datos";
 import { FormContacto } from "./FormContacto";
 
-export function Contacto({ talleres }: { talleres: string[] }) {
+/** Arma el link de cada dato; si falta, muestra [PENDIENTE]. */
+function Dato({ valor, href, texto }: { valor: string; href: string; texto?: string }) {
+  const estilo = { color: "var(--green-text)" };
+  if (!valor) return <span style={estilo}>[PENDIENTE]</span>;
+  return (
+    <a href={href} style={estilo} target={href.startsWith("http") ? "_blank" : undefined} rel="noopener noreferrer">
+      {texto ?? valor}
+    </a>
+  );
+}
+
+export async function Contacto({ talleres }: { talleres: string[] }) {
+  const c = await datosContacto();
+  const wa = c.whatsapp.replace(/\D/g, "");
+  const ig = c.instagram.replace(/^@/, "").replace(/^https?:\/\/(www\.)?instagram\.com\//, "").replace(/\/$/, "");
+  const li = /^https?:\/\//.test(c.linkedin) ? c.linkedin : `https://www.linkedin.com/${c.linkedin.replace(/^\/+/, "")}`;
   return (
     <section id="contacto" className="seccion sup borde">
       <div className="ancho">
@@ -15,13 +30,16 @@ export function Contacto({ talleres }: { talleres: string[] }) {
             </p>
             <ul style={{ margin: 0, padding: 0, listStyle: "none", display: "flex", flexWrap: "wrap", gap: "12px 32px", fontWeight: 600 }}>
               <li>
-                Email: <span style={{ color: "var(--green-text)" }}>{CONTACTO.email}</span>
+                Email: <Dato valor={c.email} href={`mailto:${c.email}`} />
               </li>
               <li>
-                WhatsApp: <span style={{ color: "var(--green-text)" }}>{CONTACTO.whatsapp}</span>
+                WhatsApp: <Dato valor={c.whatsapp} href={`https://wa.me/${wa}`} />
               </li>
               <li>
-                Instagram: <span style={{ color: "var(--green-text)" }}>{CONTACTO.instagram}</span>
+                Instagram: <Dato valor={c.instagram} href={`https://instagram.com/${ig}`} />
+              </li>
+              <li>
+                LinkedIn: <Dato valor={c.linkedin} href={li} texto={c.linkedin.replace(/^https?:\/\/(www\.)?linkedin\.com\/(company\/|in\/)?/, "").replace(/\/$/, "")} />
               </li>
             </ul>
           </div>

@@ -193,3 +193,42 @@ export async function moderar(fd: FormData) {
   revalidatePath("/comunidad");
   revalidatePath("/hlidskjalf/comunidad");
 }
+
+// ───────── Frases de Ratatoskr ─────────
+
+export async function guardarFrase(fd: FormData) {
+  const { supabase } = await requireEquipo();
+  const id = txt(fd, "id", 60);
+  const texto = txt(fd, "texto", 140);
+  if (!texto) return;
+  const fila = { texto, orden: Number.parseInt(txt(fd, "orden", 6) || "0", 10) || 0, activa: fd.get("activa") === "on" };
+  if (id) await supabase.from("frases_ratatoskr").update(fila).eq("id", id);
+  else await supabase.from("frases_ratatoskr").insert(fila);
+  revalidatePath("/comunidad");
+  revalidatePath("/hlidskjalf/comunidad/ratatoskr");
+}
+
+export async function borrarFrase(fd: FormData) {
+  const { supabase } = await requireEquipo();
+  await supabase.from("frases_ratatoskr").delete().eq("id", txt(fd, "id", 60));
+  revalidatePath("/comunidad");
+  revalidatePath("/hlidskjalf/comunidad/ratatoskr");
+}
+
+// ───────── Contacto ─────────
+
+export async function guardarContacto(_prev: EstadoPanel, fd: FormData): Promise<EstadoPanel> {
+  const { supabase } = await requireEquipo();
+  const email = txt(fd, "email", 200);
+  if (email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) return { ok: false, mensaje: "El email no parece válido." };
+  const filas = [
+    { clave: "email", valor: email },
+    { clave: "whatsapp", valor: txt(fd, "whatsapp", 40) },
+    { clave: "instagram", valor: txt(fd, "instagram", 120) },
+    { clave: "linkedin", valor: txt(fd, "linkedin", 200) },
+  ].map((f) => ({ ...f, updated_at: new Date().toISOString() }));
+  const { error } = await supabase.from("ajustes").upsert(filas, { onConflict: "clave" });
+  if (error) return { ok: false, mensaje: `No se pudo guardar: ${error.message}` };
+  revalidarSitio();
+  return { ok: true, mensaje: "Guardado. Ya se ve en el sitio." };
+}

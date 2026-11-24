@@ -6,12 +6,9 @@ export const CALENDAR_ID =
 
 export const ZONA = "America/Argentina/Buenos_Aires";
 
-// Datos de contacto: completalos cuando los tengas.
-export const CONTACTO = {
-  email: "[PENDIENTE]",
-  whatsapp: "[PENDIENTE]",
-  instagram: "[PENDIENTE]",
-};
+// Datos de contacto: se cargan desde el panel (Hliðskjálf > Contacto).
+export type DatosContacto = { email: string; whatsapp: string; instagram: string; linkedin: string };
+export const CLAVES_CONTACTO = ["email", "whatsapp", "instagram", "linkedin"] as const;
 
 /** Temas del blog, en el orden en que aparecen los filtros. */
 export const TEMAS_BLOG = ["Lenguaje", "Emociones", "Liderazgo", "Sistemas", "Imagen", "Presupuesto"];

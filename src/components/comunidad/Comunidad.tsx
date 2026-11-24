@@ -10,6 +10,7 @@ export type Seccion = "arbol" | "muro" | "mimir" | "foro";
 const SLOTS = [[50.2,17.1],[17.2,57.1],[83.2,57.1],[91.5,7.1],[9.0,7.1],[50.2,57.1],[25.5,27.1],[75.0,27.1],[50.2,37.1],[25.5,7.1],[75.0,7.1],[9.0,27.1],[91.5,27.1],[33.7,57.1],[66.7,57.1],[58.5,7.1],[58.5,27.1],[91.5,47.1],[42.0,7.1],[17.2,17.1],[33.7,17.1],[66.7,17.1],[83.2,17.1],[42.0,27.1],[17.2,37.1],[33.7,37.1],[66.7,37.1],[83.2,37.1],[9.0,47.1],[25.5,47.1],[42.0,47.1],[58.5,47.1],[75.0,47.1]];
 const ROT = [-2,1,-1,2,0,-1,1,-2,2,-1,-2,1,-1,2,0,-1,1,-2,2,-1,-2,1,-1,2,0,-1,1,-2,2,-1,-2,1,-1];
 const PERCHES = [[37.6, 39.4], [48.6, 35.5], [59.1, 28.5], [65.2, 44.9], [50, 59.3]];
+/** Frases por defecto, si el equipo todavía no cargó ninguna desde el panel. */
 const PHRASES = ["No hay sueños ni muy grandes ni muy chicos.", "Cada hoja empezó siendo una pregunta.", "Lo que nombrás empieza a existir.", "Las raíces sostienen lo que las ramas sueñan.", "Un sueño compartido llega más lejos.", "Sin apuro: el árbol crece de a poco.", "Soñar también es un compromiso con vos."];
 const PIEDRAS = [[56.8, 54.6, -10], [43.0, 46.1, -24], [43.9, 20.6, -19], [56.0, 80.5, 25], [81.9, 45.7, -23], [31.6, 47.3, 6], [44.6, 82.5, 8], [17.5, 50.5, -21], [70.3, 84.3, -10], [69.2, 45.5, 28], [69.8, 12.3, -9], [31.4, 82.8, -28], [92.1, 45.9, 5], [55.9, 16.2, -19], [32.2, 12.6, 8], [6.0, 87.6, -11], [6.1, 17.3, 15], [80.4, 12.0, 13], [80.9, 86.9, -6], [7.2, 51.6, 20], [17.5, 78.9, 9], [92.6, 82.7, -23], [19.9, 13.6, 19], [94.0, 13.6, -20]];
 const RUNAS: [string, string][] = [["Fehu", "M3 1V17M3 4L9 1M3 8L9 5"], ["Uruz", "M3 17V1L9 5V17"], ["Thurisaz", "M3 1V17M3 5L8 9L3 13"], ["Ansuz", "M3 1V17M3 1L9 5M3 6L9 10"], ["Raidho", "M3 17V1L8 4.5L3 8.5L9 17"], ["Kenaz", "M8 2L3 9L8 16"], ["Gebo", "M2 2L10 16M10 2L2 16"], ["Wunjo", "M3 1V17M3 1L8 5L3 9"], ["Hagalaz", "M3 1V17M9 1V17M3 6L9 11"], ["Naudiz", "M6 1V17M3 7L9 11"], ["Isa", "M6 1V17"], ["Jera", "M5 3L2 7L5 11M7 7L10 11L7 15"], ["Eihwaz", "M6 1V17M6 1L9 4M6 17L3 14"], ["Perthro", "M3 1V17M3 1L7 4L9 2M3 17L7 14L9 16"], ["Algiz", "M6 1V17M6 8L2 3M6 8L10 3"], ["Sowilo", "M8 1L3 6L9 12L4 17"], ["Tiwaz", "M6 1V17M2 6L6 1L10 6"], ["Berkano", "M3 1V17M3 1L8 5L3 9L8 13L3 17"], ["Ehwaz", "M2 17V1L6 6L10 1V17"], ["Mannaz", "M2 17V1L10 9M10 17V1L2 9"], ["Laguz", "M3 17V1L9 6"], ["Ingwaz", "M6 2L10 9L6 16L2 9Z"], ["Dagaz", "M2 1V17L10 1V17L2 1"], ["Othala", "M2 17L9 9L6 2L3 9L10 17"]];
@@ -122,6 +123,7 @@ function Yggdrasil({ datos, puede }: { datos: Datos; puede: (id: string) => bool
   const perch = PERCHES[n % PERCHES.length];
   const prev = PERCHES[(n + PERCHES.length - 1) % PERCHES.length];
   const hojas = datos.suenos.slice(-SLOTS.length);
+  const frases = datos.frases.length > 0 ? datos.frases : PHRASES;
 
   return (
     <>
@@ -161,7 +163,7 @@ function Yggdrasil({ datos, puede }: { datos: Datos; puede: (id: string) => bool
           <div className="rata" style={{ left: `${perch[0]}%`, top: `${perch[1]}%` }}>
             <div key={n} className="globo" role="status" aria-live="polite">
               <span style={{ display: "block", fontSize: "0.68rem", fontWeight: 700, letterSpacing: "0.06em", textTransform: "uppercase", color: "var(--eyebrow)" }}>Ratatoskr</span>
-              {PHRASES[n % PHRASES.length]}
+              {frases[n % frases.length]}
             </div>
             <svg className={perch[0] < prev[0] ? "flip" : ""} width="58" height="50" viewBox="0 0 64 56" aria-hidden="true">
               <path d="M22 49 C5 47 -1 27 10 13 C19 2 36 7 33 19 C31 27 21 25 22 18 C14 28 21 40 27 48 Z" fill="#C98A45" />
