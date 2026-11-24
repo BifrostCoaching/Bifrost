@@ -8,7 +8,7 @@ import { rango } from "@/lib/format";
 export const revalidate = 60;
 
 const PRONTO = [
-  { titulo: "Profesionales", texto: "Coaches, asesores de imagen, contadores y otros profesionales que trabajan con Bifröst." },
+  { titulo: "Profesionales", texto: "Los Vanir: coaches, asesores de imagen, contadores y otros profesionales que se suman a Bifröst con su oficio." },
 ];
 
 export default async function Inicio() {
@@ -63,6 +63,7 @@ export default async function Inicio() {
           </h2>
           <div className="fila">
             <Tarjeta href="/que-hacemos" titulo="Qué hacemos" texto="Nuestro enfoque, cómo trabajamos y los pilares en los que nos apoyamos." />
+            <Tarjeta href="/servicios" titulo="Servicios" texto="Lo que Bifröst brinda en forma directa, más allá de los talleres." />
             <Tarjeta href="/talleres" titulo="Talleres" texto={resumenTalleres} />
             <Tarjeta href="/blog" titulo="Blog" texto="Pensamientos sobre lenguaje, emociones, liderazgo y aprendizaje." />
             <Tarjeta href="/calendario" titulo="Calendario" texto="Las próximas fechas y la proyección del año." />
@@ -82,7 +83,7 @@ export default async function Inicio() {
         </div>
       </section>
 
-      <Contacto talleres={talleres.map((t) => t.nombre)} />
+      <Contacto />
     </>
   );
 }

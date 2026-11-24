@@ -4,7 +4,7 @@ import { notFound } from "next/navigation";
 import { BandaReflexiones } from "@/components/BandaReflexiones";
 import { Contacto } from "@/components/Contacto";
 import { Portada } from "@/components/Portada";
-import { postPorSlug, talleresPublicados } from "@/lib/datos";
+import { postPorSlug } from "@/lib/datos";
 import { fecha } from "@/lib/format";
 
 export const revalidate = 60;
@@ -19,7 +19,6 @@ export async function generateMetadata({ params }: Params): Promise<Metadata> {
 export default async function Articulo({ params }: Params) {
   const post = await postPorSlug((await params).slug);
   if (!post) notFound();
-  const talleres = await talleresPublicados();
   // El texto se guarda como texto plano: cada línea en blanco separa un párrafo.
   const parrafos = (post.texto || post.resumen).split(/\n\s*\n/).map((p) => p.trim()).filter(Boolean);
 
@@ -46,7 +45,7 @@ export default async function Articulo({ params }: Params) {
         </article>
       </section>
       <BandaReflexiones />
-      <Contacto talleres={talleres.map((t) => t.nombre)} />
+      <Contacto />
     </>
   );
 }

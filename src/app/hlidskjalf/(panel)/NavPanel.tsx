@@ -4,6 +4,7 @@ import { usePathname } from "next/navigation";
 
 const LINKS = [
   ["/hlidskjalf", "Resumen"],
+  ["/hlidskjalf/servicios", "Servicios"],
   ["/hlidskjalf/talleres", "Talleres"],
   ["/hlidskjalf/eventos", "Eventos"],
   ["/hlidskjalf/blog", "Blog"],
@@ -13,6 +14,7 @@ const LINKS = [
   ["/hlidskjalf/interesados", "Interesados"],
   ["/hlidskjalf/consultas", "Consultas"],
   ["/hlidskjalf/contacto", "Contacto"],
+  ["/hlidskjalf/respaldo", "Respaldo"],
 ];
 
 export function NavPanel() {

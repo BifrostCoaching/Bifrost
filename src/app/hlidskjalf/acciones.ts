@@ -6,6 +6,7 @@ import { createAdminClient } from "@/lib/supabase/admin";
 import { createClient } from "@/lib/supabase/server";
 import { requireEquipo } from "@/lib/supabase/equipo";
 import { slugify } from "@/lib/format";
+import { borrarQuitadas, CARPETAS, leerImagenes, subirArchivo, type Carpeta } from "@/lib/imagenes";
 import type { EstadoInteresado } from "@/lib/types";
 
 // ───────── Sesión ─────────
@@ -46,6 +47,18 @@ function revalidarSitio() {
 
 export type EstadoPanel = { ok: boolean; mensaje: string } | null;
 
+// ───────── Imágenes ─────────
+
+/** Sube una foto a la carpeta pública. Solo para el equipo. */
+export async function subirImagen(fd: FormData): Promise<{ url?: string; error?: string }> {
+  await requireEquipo();
+  const carpeta = txt(fd, "carpeta", 20) as Carpeta;
+  if (!CARPETAS.includes(carpeta)) return { error: "Carpeta no válida." };
+  const archivo = fd.get("archivo");
+  if (!(archivo instanceof File)) return { error: "No llegó ninguna foto." };
+  return subirArchivo(archivo, carpeta);
+}
+
 // ───────── Talleres ─────────
 
 export async function guardarTaller(_prev: EstadoPanel, fd: FormData): Promise<EstadoPanel> {
@@ -67,10 +80,12 @@ export async function guardarTaller(_prev: EstadoPanel, fd: FormData): Promise<E
     encuentros: enteroONull(fd, "encuentros"),
     tipo,
     precio_texto: txt(fd, "precio_texto", 300),
+    imagenes: leerImagenes(fd.get("imagenes")),
     publicado: fd.get("publicado") === "on",
     orden: Number.parseInt(txt(fd, "orden", 6) || "0", 10) || 0,
   };
 
+  const antes = id ? (await supabase.from("talleres").select("imagenes").eq("id", id).maybeSingle()).data?.imagenes : [];
   const { data, error } = id
     ? await supabase.from("talleres").update(fila).eq("id", id).select("id").single()
     : await supabase.from("talleres").insert(fila).select("id").single();
@@ -78,6 +93,7 @@ export async function guardarTaller(_prev: EstadoPanel, fd: FormData): Promise<E
     const msj = error.code === "23505" ? "Ya hay otro taller con esa dirección (slug). Cambiala." : error.message;
     return { ok: false, mensaje: `No se pudo guardar: ${msj}` };
   }
+  await borrarQuitadas(antes, fila.imagenes);
   revalidarSitio();
   if (!id) redirect(`/hlidskjalf/talleres/${data.id}?guardado=1`);
   return { ok: true, mensaje: "Guardado. Ya se ve en el sitio." };
@@ -86,7 +102,9 @@ export async function guardarTaller(_prev: EstadoPanel, fd: FormData): Promise<E
 export async function borrarTaller(fd: FormData) {
   const { supabase } = await requireEquipo();
   const id = txt(fd, "id", 60);
+  const antes = (await supabase.from("talleres").select("imagenes").eq("id", id).maybeSingle()).data?.imagenes;
   const { error } = await supabase.from("talleres").delete().eq("id", id);
+  if (!error) await borrarQuitadas(antes, []);
   if (error) {
     // Si tiene interesados no se borra: se despublica para no perder el registro.
     await supabase.from("talleres").update({ publicado: false }).eq("id", id);
@@ -111,12 +129,15 @@ export async function guardarEvento(_prev: EstadoPanel, fd: FormData): Promise<E
     tipo: txt(fd, "tipo") === "pago" ? "pago" : "gratuito",
     precio_texto: txt(fd, "precio_texto", 300),
     descripcion: txt(fd, "descripcion"),
+    imagen: leerImagenes(fd.get("imagenes"), 1)[0] ?? "",
     publicado: fd.get("publicado") === "on",
   };
+  const antes = id ? (await supabase.from("eventos").select("imagen").eq("id", id).maybeSingle()).data?.imagen : "";
   const { data, error } = id
     ? await supabase.from("eventos").update(fila).eq("id", id).select("id").single()
     : await supabase.from("eventos").insert(fila).select("id").single();
   if (error) return { ok: false, mensaje: `No se pudo guardar: ${error.message}` };
+  await borrarQuitadas(antes ? [antes] : [], fila.imagen ? [fila.imagen] : []);
   revalidarSitio();
   if (!id) redirect(`/hlidskjalf/eventos/${data.id}?guardado=1`);
   return { ok: true, mensaje: "Guardado. Ya se ve en el calendario." };
@@ -124,9 +145,51 @@ export async function guardarEvento(_prev: EstadoPanel, fd: FormData): Promise<E
 
 export async function borrarEvento(fd: FormData) {
   const { supabase } = await requireEquipo();
-  await supabase.from("eventos").delete().eq("id", txt(fd, "id", 60));
+  const id = txt(fd, "id", 60);
+  const antes = (await supabase.from("eventos").select("imagen").eq("id", id).maybeSingle()).data?.imagen;
+  const { error } = await supabase.from("eventos").delete().eq("id", id);
+  if (!error && antes) await borrarQuitadas([antes], []);
   revalidarSitio();
   redirect("/hlidskjalf/eventos");
+}
+
+// ───────── Servicios ─────────
+
+export async function guardarServicio(_prev: EstadoPanel, fd: FormData): Promise<EstadoPanel> {
+  const { supabase } = await requireEquipo();
+  const id = txt(fd, "id", 60);
+  const nombre = txt(fd, "nombre", 200);
+  if (!nombre) return { ok: false, mensaje: "El servicio necesita un nombre." };
+  const fila = {
+    nombre,
+    bajada: txt(fd, "bajada", 300),
+    descripcion: txt(fd, "descripcion"),
+    para_quien: txt(fd, "para_quien", 1000),
+    modalidad: txt(fd, "modalidad", 300),
+    precio_texto: txt(fd, "precio_texto", 300),
+    imagenes: leerImagenes(fd.get("imagenes")),
+    publicado: fd.get("publicado") === "on",
+    orden: Number.parseInt(txt(fd, "orden", 6) || "0", 10) || 0,
+  };
+  const antes = id ? (await supabase.from("servicios").select("imagenes").eq("id", id).maybeSingle()).data?.imagenes : [];
+  const { data, error } = id
+    ? await supabase.from("servicios").update(fila).eq("id", id).select("id").single()
+    : await supabase.from("servicios").insert(fila).select("id").single();
+  if (error) return { ok: false, mensaje: `No se pudo guardar: ${error.message}` };
+  await borrarQuitadas(antes, fila.imagenes);
+  revalidarSitio();
+  if (!id) redirect(`/hlidskjalf/servicios/${data.id}?guardado=1`);
+  return { ok: true, mensaje: "Guardado. Ya se ve en el sitio." };
+}
+
+export async function borrarServicio(fd: FormData) {
+  const { supabase } = await requireEquipo();
+  const id = txt(fd, "id", 60);
+  const antes = (await supabase.from("servicios").select("imagenes").eq("id", id).maybeSingle()).data?.imagenes;
+  const { error } = await supabase.from("servicios").delete().eq("id", id);
+  if (!error) await borrarQuitadas(antes, []);
+  revalidarSitio();
+  redirect("/hlidskjalf/servicios");
 }
 
 // ───────── Interesados y consultas ─────────

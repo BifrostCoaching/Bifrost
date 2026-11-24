@@ -346,6 +346,7 @@ function ListaEventos({ titulo, eventos, vacio }: { titulo: string; eventos: Eve
         <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(300px, 1fr))", gap: 18 }}>
           {eventos.map((e) => (
             <article key={e.id} style={{ display: "flex", flexDirection: "column", gap: 8, padding: 22, borderRadius: 18, background: "var(--surface)", border: "1px solid var(--line)" }}>
+              {e.imagen && <img src={e.imagen} alt="" className="foto-evento" loading="lazy" />}
               <span className={`tag ${e.tipo === "pago" ? "paid" : "free"}`}>{e.tipo === "pago" ? "Pago" : "Gratuito"}</span>
               <h3 style={{ margin: 0, fontSize: "1.25rem" }}>{e.titulo}</h3>
               <p style={{ margin: 0, fontWeight: 600 }}>{rango(e.inicio, e.fin)}</p>

@@ -4,7 +4,7 @@ import { Contacto } from "@/components/Contacto";
 import { Portada } from "@/components/Portada";
 import { FormEspacio } from "@/components/dar/FormEspacio";
 import { IconoEspacio, TIPOS_ESPACIO } from "@/components/dar/TiposEspacio";
-import { darPorDarPublico, talleresPublicados } from "@/lib/datos";
+import { darPorDarPublico } from "@/lib/datos";
 import { fecha, linkContacto } from "@/lib/format";
 
 export const revalidate = 60;
@@ -22,7 +22,7 @@ const fechaCorta = (v: string | null) => (v ? fecha(v) : "[PENDIENTE]");
 export default async function DarPorDar({ searchParams }: { searchParams: Promise<{ tipo?: string }> }) {
   const { tipo } = await searchParams;
   const elegido = tipo && (TIPOS_ESPACIO as readonly string[]).includes(tipo) ? tipo : "Todos";
-  const [{ espacios, convocatorias }, talleres] = await Promise.all([darPorDarPublico(), talleresPublicados()]);
+  const { espacios, convocatorias } = await darPorDarPublico();
   const visibles = elegido === "Todos" ? espacios : espacios.filter((e) => e.tipo === elegido);
   const tiposConEspacios = TIPOS_ESPACIO.filter((t) => espacios.some((e) => e.tipo === t));
 
@@ -172,7 +172,7 @@ export default async function DarPorDar({ searchParams }: { searchParams: Promis
         </div>
       </section>
 
-      <Contacto talleres={talleres.map((t) => t.nombre)} />
+      <Contacto />
     </>
   );
 }

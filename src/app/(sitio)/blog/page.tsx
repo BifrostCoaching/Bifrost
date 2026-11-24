@@ -4,7 +4,7 @@ import { Contacto } from "@/components/Contacto";
 import { BandaReflexiones } from "@/components/BandaReflexiones";
 import { Portada } from "@/components/Portada";
 import { TEMAS_BLOG as TEMAS } from "@/lib/site";
-import { postsPublicados, talleresPublicados } from "@/lib/datos";
+import { postsPublicados } from "@/lib/datos";
 
 export const revalidate = 60;
 export const metadata: Metadata = { title: "Blog" };
@@ -12,7 +12,7 @@ export const metadata: Metadata = { title: "Blog" };
 export default async function Blog({ searchParams }: { searchParams: Promise<{ tema?: string }> }) {
   const { tema } = await searchParams;
   const elegido = tema && TEMAS.includes(tema) ? tema : "Todos";
-  const [posts, talleres] = await Promise.all([postsPublicados(), talleresPublicados()]);
+  const posts = await postsPublicados();
   const visibles = elegido === "Todos" ? posts : posts.filter((p) => p.tema === elegido);
 
   return (
@@ -58,7 +58,7 @@ export default async function Blog({ searchParams }: { searchParams: Promise<{ t
         </div>
       </section>
       <BandaReflexiones />
-      <Contacto talleres={talleres.map((t) => t.nombre)} />
+      <Contacto />
     </>
   );
 }

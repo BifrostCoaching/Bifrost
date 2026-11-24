@@ -13,7 +13,7 @@ export function TarjetaTaller({ t, indice = 0, detalle = false, children }: { t:
   return (
     <article className="taller">
       <div className="taller-media" aria-hidden="true">
-        <Diapositivas imagenes={imagenesTaller(t.slug)} desfase={indice * 2000} />
+        <Diapositivas imagenes={imagenesTaller(t)} desfase={indice * 2000} />
         <div className="media-shade" />
       </div>
       <div className="taller-cuerpo">

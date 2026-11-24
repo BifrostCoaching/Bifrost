@@ -115,7 +115,7 @@ export default async function QueHacemos() {
         </div>
       </section>
 
-      <Contacto talleres={talleres.map((t) => t.nombre)} />
+      <Contacto />
     </>
   );
 }

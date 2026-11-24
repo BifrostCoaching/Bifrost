@@ -18,7 +18,6 @@ export function Diapositivas({ imagenes, desfase = 0 }: { imagenes: string[]; de
   return (
     <>
       {imagenes.map((src, k) => (
-        // eslint-disable-next-line @next/next/no-img-element
         <img key={src} src={src} alt="" className={`slide${i % imagenes.length === k ? " on" : ""}`} loading={k === 0 ? "eager" : "lazy"} />
       ))}
     </>

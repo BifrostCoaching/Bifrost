@@ -9,7 +9,7 @@ import { CALENDAR_ID, ZONA } from "@/lib/site";
 export const metadata: Metadata = { title: "Calendario" };
 export const revalidate = 60;
 
-type Actividad = { id: string; nombre: string; inicio: string; fin: string; pago: boolean; badge: string; detalle: string; href?: string };
+type Actividad = { id: string; nombre: string; inicio: string; fin: string; pago: boolean; badge: string; detalle: string; href?: string; imagen?: string };
 
 const MESES = ["Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"];
 const DIAS = ["Lun", "Mar", "Mié", "Jue", "Vie", "Sáb", "Dom"];
@@ -27,7 +27,7 @@ export default async function Calendario({ searchParams }: Props) {
     })),
     ...eventos.filter((e) => e.inicio).map((e) => ({
       id: e.id, nombre: e.titulo, inicio: e.inicio!, fin: e.fin ?? e.inicio!, pago: e.tipo === "pago",
-      badge: e.tipo === "pago" ? "Evento pago" : "Evento gratuito", detalle: [e.organiza, e.modalidad].filter(Boolean).join(" · "),
+      badge: e.tipo === "pago" ? "Evento pago" : "Evento gratuito", detalle: [e.organiza, e.modalidad].filter(Boolean).join(" · "), imagen: e.imagen || undefined,
     })),
     ...dar.convocatorias.filter((c) => c.inicio).map((c) => ({
       id: c.id, nombre: c.titulo, inicio: c.inicio!, fin: c.fin ?? c.inicio!, pago: false,
@@ -124,7 +124,7 @@ export default async function Calendario({ searchParams }: Props) {
         </div>
       </section>
 
-      <Contacto talleres={talleres.map((t) => t.nombre)} />
+      <Contacto />
     </>
   );
 }
@@ -142,6 +142,7 @@ function Norna({ nombre, bajada, items }: { nombre: string; bajada: string; item
         <div className="fila" style={{ gap: 24 }}>
           {items.map((a) => (
             <article key={a.id} className="norna">
+              {a.imagen && <img src={a.imagen} alt="" className="foto-evento" loading="lazy" />}
               <div style={{ display: "flex", flexWrap: "wrap", alignItems: "center", justifyContent: "space-between", gap: 8 }}>
                 <h3>{a.href ? <Link href={a.href} style={{ color: "inherit" }}>{a.nombre}</Link> : a.nombre}</h3>
                 <span className={`tag ${a.pago ? "paid" : "free"}`} style={{ fontSize: "0.85rem" }}>{a.badge}</span>

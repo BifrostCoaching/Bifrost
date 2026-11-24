@@ -48,7 +48,9 @@ export function slugify(s: string): string {
 }
 
 /** Imágenes de cada taller (las de la maqueta). Si un taller nuevo no tiene, usa las de la portada. */
-export function imagenesTaller(slug: string): string[] {
+export function imagenesTaller(t: { slug: string; imagenes?: string[] }): string[] {
+  if (t.imagenes?.length) return t.imagenes;
+  const slug = t.slug;
   if (slug.startsWith("vestirse")) return ["/img/vestirse-1.jpg", "/img/vestirse-2.jpg", "/img/vestirse-3.jpg"];
   if (slug.includes("presupuesto")) return ["/img/presupuesto-1.jpg", "/img/presupuesto-2.jpg", "/img/presupuesto-3.jpg"];
   return ["/img/portada-1.jpg", "/img/portada-2.jpg", "/img/portada-3.jpg"];

@@ -1,7 +1,7 @@
 import "server-only";
 import { createClient } from "@supabase/supabase-js";
 import type { DatosContacto } from "./site";
-import type { Convocatoria, Espacio, Evento, Experiencia, Post, Reflexion, Sueno, Taller, TemaForo } from "./types";
+import type { Convocatoria, Espacio, Evento, Experiencia, Post, Reflexion, Servicio, Sueno, Taller, TemaForo } from "./types";
 
 /** Cliente de solo lectura para las páginas públicas (sin sesión, respeta RLS). */
 function publico() {
@@ -139,6 +139,24 @@ export async function comunidadPublica(): Promise<Comunidad> {
     // Si la tabla de frases todavía no existe, Ratatoskr usa las frases por defecto.
     frases: ((fr.data ?? []) as { texto: string }[]).map((x) => x.texto).filter(Boolean),
   };
+}
+
+// ───────── Servicios ─────────
+const DEMO_SERVICIOS: Servicio[] = [1, 2].map((n) => ({
+  id: `serv${n}`, nombre: `[PENDIENTE] Servicio ${n}`, bajada: "[PENDIENTE] Una línea que lo resuma",
+  descripcion: "Servicio de ejemplo. Acá va qué es, cómo se trabaja y qué se llevan las personas.",
+  para_quien: "[PENDIENTE]", modalidad: "[PENDIENTE]", precio_texto: "", imagenes: [], publicado: true, orden: n,
+}));
+
+export async function serviciosPublicados(): Promise<Servicio[]> {
+  const db = publico();
+  if (!db) return process.env.BIFROST_DEMO === "1" ? DEMO_SERVICIOS : [];
+  const { data, error } = await db.from("servicios").select("*").eq("publicado", true).order("orden").order("created_at");
+  if (error) {
+    console.error("servicios:", error.message);
+    return [];
+  }
+  return (data ?? []) as Servicio[];
 }
 
 // ───────── Contacto ─────────
