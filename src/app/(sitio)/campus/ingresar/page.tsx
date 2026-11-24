@@ -1,14 +1,16 @@
 import type { Metadata } from "next";
 import { Portada } from "@/components/Portada";
+import { textosPortada } from "@/lib/portadas";
 import { FormCampus } from "./FormCampus";
 
 export const metadata: Metadata = { title: "Ingresar al Campus", robots: { index: false } };
 
 export default async function IngresarCampus({ searchParams }: { searchParams: Promise<{ error?: string }> }) {
   const { error } = await searchParams;
+  const portada = await textosPortada("campus");
   return (
     <>
-      <Portada ceja="Campus" titulo="Midgard" bajada="El mundo de las personas, el recinto del medio. Tu bosque de talleres, tu agenda, los eventos y los talleres en los que estás, todo en un mismo lugar." />
+      <Portada ceja="Campus" titulo={portada.titulo} bajada={portada.bajada} />
       <section className="seccion" style={{ paddingTop: 32 }}>
         <div className="ancho" style={{ maxWidth: 560 }}>
           {error === "sin-acceso" && (

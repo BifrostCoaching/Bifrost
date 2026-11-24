@@ -5,6 +5,7 @@ import { Portada } from "@/components/Portada";
 import { insignia } from "@/components/TarjetaTaller";
 import { talleresPublicados } from "@/lib/datos";
 import { rango } from "@/lib/format";
+import { textosPortada } from "@/lib/portadas";
 
 export const revalidate = 60;
 export const metadata: Metadata = { title: "Qué hacemos" };
@@ -17,13 +18,14 @@ const PILARES = [
 ];
 
 export default async function QueHacemos() {
+  const portada = await textosPortada("que-hacemos");
   const talleres = await talleresPublicados();
   return (
     <>
       <Portada
         ceja="Qué hacemos"
-        titulo="Espacios para aprender y llevarlo a la acción"
-        bajada="Creamos espacios de aprendizaje con mirada humana y empresarial. Acá te contamos cómo los pensamos, cómo trabajamos y en qué nos apoyamos."
+        titulo={portada.titulo}
+        bajada={portada.bajada}
       />
 
       <section id="enfoque" className="seccion sup">

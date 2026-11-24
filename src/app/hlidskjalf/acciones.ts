@@ -7,6 +7,7 @@ import { createClient } from "@/lib/supabase/server";
 import { requireEquipo } from "@/lib/supabase/equipo";
 import { slugify } from "@/lib/format";
 import { mandarAccesoCampus } from "@/lib/mail";
+import { PORTADAS } from "@/lib/portadas";
 import { borrarQuitadas, CARPETAS, leerImagenes, subirArchivo, type Carpeta } from "@/lib/imagenes";
 import type { EstadoInteresado } from "@/lib/types";
 
@@ -152,6 +153,28 @@ export async function borrarEvento(fd: FormData) {
   if (!error && antes) await borrarQuitadas([antes], []);
   revalidarSitio();
   redirect("/hlidskjalf/eventos");
+}
+
+// ───────── Textos del sitio ─────────
+
+/** Guarda los temas del blog y los títulos y bajadas de cada portada. Vacío = vuelve al texto original. */
+export async function guardarTextos(_prev: EstadoPanel, fd: FormData): Promise<EstadoPanel> {
+  const { supabase } = await requireEquipo();
+  const temas = [...new Set(txt(fd, "temas_blog", 2000).split("\n").map((t) => t.trim().slice(0, 40)).filter(Boolean))].slice(0, 20);
+  const valores: { clave: string; valor: string }[] = [{ clave: "temas_blog", valor: temas.join("\n") }];
+  for (const seccion of Object.keys(PORTADAS)) {
+    valores.push({ clave: `portada.${seccion}.titulo`, valor: txt(fd, `${seccion}.titulo`, 160) });
+    valores.push({ clave: `portada.${seccion}.bajada`, valor: txt(fd, `${seccion}.bajada`, 600) });
+  }
+  const llenos = valores.filter((v) => v.valor).map((v) => ({ ...v, updated_at: new Date().toISOString() }));
+  const vacios = valores.filter((v) => !v.valor).map((v) => v.clave);
+  if (llenos.length) {
+    const { error } = await supabase.from("ajustes").upsert(llenos, { onConflict: "clave" });
+    if (error) return { ok: false, mensaje: `No se pudo guardar: ${error.message}` };
+  }
+  if (vacios.length) await supabase.from("ajustes").delete().in("clave", vacios);
+  revalidarSitio();
+  return { ok: true, mensaje: "Guardado. Ya se ve en el sitio." };
 }
 
 // ───────── Servicios ─────────

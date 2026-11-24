@@ -5,6 +5,7 @@ import { Contacto } from "@/components/Contacto";
 import { darPorDarPublico, eventosPublicados, talleresPublicados } from "@/lib/datos";
 import { fecha, hoyBA, sumarDias } from "@/lib/format";
 import { CALENDAR_ID, ZONA } from "@/lib/site";
+import { textosPortada } from "@/lib/portadas";
 
 export const metadata: Metadata = { title: "Calendario" };
 export const revalidate = 60;
@@ -17,6 +18,7 @@ const DIAS = ["Lun", "Mar", "Mié", "Jue", "Vie", "Sáb", "Dom"];
 type Props = { searchParams: Promise<{ mes?: string }> };
 
 export default async function Calendario({ searchParams }: Props) {
+  const portada = await textosPortada("calendario");
   const [talleres, eventos, dar] = await Promise.all([talleresPublicados(), eventosPublicados(), darPorDarPublico()]);
   const hoy = hoyBA();
 
@@ -53,7 +55,7 @@ export default async function Calendario({ searchParams }: Props) {
 
   return (
     <>
-      <Portada ceja="Calendario" titulo="Las Nornas" bajada="Urd, Verdandi y Skuld: lo que fue, lo que está siendo y lo que será. Las fechas de Bifröst, la vista del mes y la proyección del año." />
+      <Portada ceja="Calendario" titulo={portada.titulo} bajada={portada.bajada} />
 
       <section className="seccion sup">
         <div className="ancho">

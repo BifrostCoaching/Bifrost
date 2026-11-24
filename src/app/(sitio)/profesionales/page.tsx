@@ -3,18 +3,20 @@ import { Contacto } from "@/components/Contacto";
 import { Portada } from "@/components/Portada";
 import { profesionalesPublicados } from "@/lib/datos";
 import { linkContacto } from "@/lib/format";
+import { textosPortada } from "@/lib/portadas";
 
 export const revalidate = 60;
 export const metadata: Metadata = { title: "Profesionales" };
 
 export default async function Profesionales() {
+  const portada = await textosPortada("profesionales");
   const profesionales = await profesionalesPublicados();
   return (
     <>
       <Portada
         ceja="Profesionales"
-        titulo="Los Vanir"
-        bajada="En el mito, los Vanir vienen de su propio reino y se suman a los Æsir con lo que cada uno sabe hacer. Así llegan a Bifröst coaches, asesores de imagen, contadores y otros profesionales, cada uno con su oficio."
+        titulo={portada.titulo}
+        bajada={portada.bajada}
       />
       <section className="seccion" style={{ paddingTop: 32 }}>
         <div className="ancho">

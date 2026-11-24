@@ -3,7 +3,7 @@
   --bg: #0e1726; --bg-rgb: 14, 23, 38; --shade-end: 0.3; --surface: #152238; --line: #2a3a57;
   --text: #ece7dd; --muted: #b7bfcb; --eyebrow: #d4a85a; --accent: #8c2433; --green-text: #7fc4b0;
   --outline: #ece7dd; --badge-a-bg: #3a1820; --badge-a-tx: #f2bec5; --badge-b-bg: #123a33; --badge-b-tx: #a8dccd;
-  --input-bg: #0e1726; --input-line: #53617d; --band: #0f2a26; --band-card: #163a35; --footer: #0a111d;
+  --input-bg: #0e1726; --input-line: #53617d; --band: #14213d; --band-card: #1d2c4f; --footer: #0a111d;
   --step1: #ece7dd; --step2: #7fc4b0; --step3: #d4a85a; --error-bg: #3a1820; --error-tx: #f2bec5;
   color-scheme: dark;
 }

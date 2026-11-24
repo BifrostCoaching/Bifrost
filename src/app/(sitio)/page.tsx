@@ -4,10 +4,12 @@ import { Contacto } from "@/components/Contacto";
 import { Portada } from "@/components/Portada";
 import { talleresPublicados } from "@/lib/datos";
 import { rango } from "@/lib/format";
+import { textosPortada } from "@/lib/portadas";
 
 export const revalidate = 60;
 
 export default async function Inicio() {
+  const portada = await textosPortada("inicio");
   const talleres = await talleresPublicados();
   const resumenTalleres =
     talleres.length > 0
@@ -18,9 +20,10 @@ export default async function Inicio() {
     <>
       <Portada
         grande
+        conMenu={false}
         ceja="Coaching · Espacios de aprendizaje"
-        titulo="Un puente entre donde estás y donde querés llegar."
-        bajada="Creamos espacios de aprendizaje con mirada humana y empresarial, para que lo que aprendés se transforme en resultados concretos."
+        titulo={portada.titulo}
+        bajada={portada.bajada}
       >
         <div className="botones">
           <Link href="/que-hacemos" className="boton">
