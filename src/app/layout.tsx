@@ -14,9 +14,15 @@ export const metadata: Metadata = {
   openGraph: { locale: "es_AR", siteName: "Bifröst", type: "website" },
 };
 
+// Aplica el tema guardado antes de pintar, para que no parpadee. Por defecto, oscuro.
+const temaInicial = `try{var t=localStorage.getItem('bifrost-tema');document.documentElement.className=document.documentElement.className.replace(/\\bt-(dark|light)\\b/,'')+(t==='claro'?' t-light':' t-dark')}catch(e){}`;
+
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="es-AR" className={`${titulos.variable} ${textos.variable}`}>
+    <html lang="es-AR" className={`${titulos.variable} ${textos.variable} t-dark`} suppressHydrationWarning>
+      <head>
+        <script dangerouslySetInnerHTML={{ __html: temaInicial }} />
+      </head>
       <body>
         <a href="#contenido" className="saltar">
           Saltar al contenido

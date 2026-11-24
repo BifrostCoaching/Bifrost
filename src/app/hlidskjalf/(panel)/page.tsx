@@ -17,9 +17,8 @@ export default async function Resumen() {
   ]);
   return (
     <>
-      <span className="ceja">Panel del equipo</span>
-      <h1>Hliðskjálf</h1>
-      <p className="apagado">Desde acá cargás y editás el contenido del sitio sin tocar el código.</p>
+      <h1>Resumen</h1>
+      <p className="apagado">Lo más importante de un vistazo.</p>
       <div className="grilla" style={{ marginTop: "1.5rem" }}>
         <Link href="/hlidskjalf/talleres" className="tarjeta">
           <span className="ceja">Talleres publicados</span>
