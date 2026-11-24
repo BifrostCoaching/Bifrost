@@ -142,6 +142,8 @@ function Yggdrasil({ datos, puede }: { datos: Datos; puede: (id: string) => bool
               <div
                 key={h.id}
                 className="leaf"
+                tabIndex={0}
+                title={h.texto}
                 style={{ left: `${slot[0]}%`, top: `${slot[1]}%`, borderColor: "#1E6B5A", background: "#1E6B5A", color: "#FFFFFF", transform: `translate(-50%, -50%) rotate(${ROT[i % ROT.length]}deg)` }}
               >
                 <svg width="14" height="14" viewBox="0 0 24 24" aria-hidden="true" style={{ flex: "0 0 auto", marginTop: 3, fill: "#A8DCCD" }}>
@@ -149,7 +151,7 @@ function Yggdrasil({ datos, puede }: { datos: Datos; puede: (id: string) => bool
                 </svg>
                 <span>
                   <span style={{ display: "block", fontSize: "0.66rem", fontWeight: 700, letterSpacing: "0.06em", textTransform: "uppercase", color: "#CFE8DF" }}>Sueño con</span>
-                  {h.texto}
+                  <span className="leaf-texto">{h.texto}</span>
                 </span>
                 {puede(h.id) && (
                   <form action={borrar} style={{ display: "contents" }}>

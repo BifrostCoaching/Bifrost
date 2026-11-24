@@ -176,10 +176,10 @@ export async function profesionalesPublicados(): Promise<Profesional[]> {
 
 // ───────── Contacto ─────────
 export async function datosContacto(): Promise<DatosContacto> {
-  const vacio: DatosContacto = { email: "", whatsapp: "", instagram: "", linkedin: "" };
+  const vacio: DatosContacto = { email: "", whatsapp: "", instagram: "", linkedin: "", youtube: "" };
   const db = publico();
   if (!db) return vacio;
-  const { data, error } = await db.from("ajustes").select("clave, valor").in("clave", ["email", "whatsapp", "instagram", "linkedin"]);
+  const { data, error } = await db.from("ajustes").select("clave, valor").in("clave", ["email", "whatsapp", "instagram", "linkedin", "youtube"]);
   if (error) return vacio; // si la tabla todavía no existe, se muestra [PENDIENTE]
   for (const { clave, valor } of (data ?? []) as { clave: keyof DatosContacto; valor: string }[]) vacio[clave] = valor ?? "";
   return vacio;
