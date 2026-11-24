@@ -70,9 +70,10 @@ Entrás desde el pie del sitio (**Ingreso del equipo**) o en `/hlidskjalf`.
 - **Dar por dar**: publicás los espacios comunitarios que llegan por el formulario y cargás sus convocatorias.
 - **Blog**: escribís artículos. Quedan como borrador hasta que tildás "Publicado en el sitio".
 - **Comunidad**: lo que deja la gente en Yggdrasil, el pozo de Urd y Hvergelmir se publica enseguida; desde acá lo retirás si no respeta las normas, corregís la ortografía o lo borrás para siempre. Quien lo publicó no puede borrarlo. Las reflexiones del pozo de Mímir esperan que las apruebes. Ahí también está **Frases de Ratatoskr**, para cambiar lo que dice la ardilla.
+- **Textos**: el título y la leyenda de la portada de cada pestaña, y la lista de temas del blog.
 - **Respaldo**: descarga un archivo con todos los datos del sitio. Conviene bajarlo una vez por mes y guardarlo en un Drive privado (tiene datos personales).
 
-Las fotos se achican solas en el navegador antes de subirse (JPG, PNG o WEBP). Se guardan en la carpeta pública `imagenes` de Supabase Storage; solo el servidor del sitio puede subir o borrar ahí, y lo hace después de comprobar que quien lo pide es del equipo. Los textos de Inicio y Qué hacemos, y las fotos de portada, todavía se cambian en el código.
+Las fotos se achican solas en el navegador antes de subirse (JPG, PNG o WEBP). Se guardan en la carpeta pública `imagenes` de Supabase Storage; solo el servidor del sitio puede subir o borrar ahí, y lo hace después de comprobar que quien lo pide es del equipo. El resto de los textos de Inicio y Qué hacemos, y las fotos de portada, todavía se cambian en el código.
 
 ---
 

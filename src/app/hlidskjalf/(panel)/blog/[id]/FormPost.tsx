@@ -1,10 +1,9 @@
 "use client";
 import { useActionState } from "react";
 import { guardarPost, type EstadoPanel } from "../../../acciones";
-import { TEMAS_BLOG } from "@/lib/site";
 import type { Post } from "@/lib/types";
 
-export function FormPost({ post }: { post: Post | null }) {
+export function FormPost({ post, temas }: { post: Post | null; temas: string[] }) {
   const [estado, accion, guardando] = useActionState<EstadoPanel, FormData>(guardarPost, null);
   const p = post;
   return (
@@ -21,8 +20,8 @@ export function FormPost({ post }: { post: Post | null }) {
       <div className="doble">
         <label>
           Tema
-          <select name="tema" defaultValue={p?.tema ?? TEMAS_BLOG[0]}>
-            {TEMAS_BLOG.map((t) => (
+          <select name="tema" defaultValue={p?.tema ?? temas[0]}>
+            {(p?.tema && !temas.includes(p.tema) ? [p.tema, ...temas] : temas).map((t) => (
               <option key={t}>{t}</option>
             ))}
           </select>

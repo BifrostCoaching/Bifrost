@@ -4,6 +4,7 @@ import { Portada } from "@/components/Portada";
 import { Comunidad, type Seccion } from "@/components/comunidad/Comunidad";
 import { comunidadPublica, talleresPublicados } from "@/lib/datos";
 import { createClient } from "@/lib/supabase/server";
+import { textosPortada } from "@/lib/portadas";
 
 export const metadata: Metadata = { title: "Comunidad" };
 
@@ -20,6 +21,7 @@ async function esEquipo(): Promise<boolean> {
 }
 
 export default async function PaginaComunidad({ searchParams }: { searchParams: Promise<{ seccion?: string }> }) {
+  const portada = await textosPortada("comunidad");
   const { seccion } = await searchParams;
   const inicial = SECCIONES.includes(seccion as Seccion) ? (seccion as Seccion) : "arbol";
   const [datos, talleres, equipo] = await Promise.all([comunidadPublica(), talleresPublicados(), esEquipo()]);
@@ -29,8 +31,8 @@ export default async function PaginaComunidad({ searchParams }: { searchParams: 
     <>
       <Portada
         ceja="Comunidad"
-        titulo="Yggdrasil y sus tres pozos"
-        bajada="Colgá tus sueños en Yggdrasil, dejá lo vivido en el pozo de Urd, compartí tus reflexiones en el pozo de Mímir y conversá en Hvergelmir."
+        titulo={portada.titulo}
+        bajada={portada.bajada}
       />
       <Comunidad datos={datos} equipo={equipo} talleres={nombres} inicial={inicial} />
       <section className="seccion" style={{ paddingTop: 0 }}>

@@ -1,6 +1,6 @@
 import "server-only";
 import { createClient } from "@supabase/supabase-js";
-import type { DatosContacto } from "./site";
+import { TEMAS_BLOG, type DatosContacto } from "./site";
 import type { Convocatoria, Espacio, Evento, Experiencia, Post, Profesional, Reflexion, Servicio, Sueno, Taller, TemaForo } from "./types";
 
 /** Cliente de solo lectura para las páginas públicas (sin sesión, respeta RLS). */
@@ -172,6 +172,25 @@ export async function profesionalesPublicados(): Promise<Profesional[]> {
     return [];
   }
   return (data ?? []) as Profesional[];
+}
+
+// ───────── Ajustes editables ─────────
+/** Lee varios ajustes de una vez. Lo que no está cargado vuelve vacío. */
+export async function ajustes(claves: string[]): Promise<Record<string, string>> {
+  const res: Record<string, string> = {};
+  const db = publico();
+  if (!db) return res;
+  const { data, error } = await db.from("ajustes").select("clave, valor").in("clave", claves);
+  if (error) return res;
+  for (const { clave, valor } of (data ?? []) as { clave: string; valor: string }[]) res[clave] = valor ?? "";
+  return res;
+}
+
+/** Temas del blog: los que cargó el equipo, uno por línea; si no hay, los de siempre. */
+export async function temasBlog(): Promise<string[]> {
+  const v = (await ajustes(["temas_blog"])).temas_blog ?? "";
+  const lista = [...new Set(v.split("\n").map((t) => t.trim()).filter(Boolean))];
+  return lista.length ? lista : TEMAS_BLOG;
 }
 
 // ───────── Contacto ─────────

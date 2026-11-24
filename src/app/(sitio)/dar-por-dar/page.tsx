@@ -6,6 +6,7 @@ import { FormEspacio } from "@/components/dar/FormEspacio";
 import { IconoEspacio, TIPOS_ESPACIO } from "@/components/dar/TiposEspacio";
 import { darPorDarPublico } from "@/lib/datos";
 import { fecha, linkContacto } from "@/lib/format";
+import { textosPortada } from "@/lib/portadas";
 
 export const revalidate = 60;
 export const metadata: Metadata = { title: "Dar por dar" };
@@ -20,6 +21,7 @@ const VALORES = [
 const fechaCorta = (v: string | null) => (v ? fecha(v) : "[PENDIENTE]");
 
 export default async function DarPorDar({ searchParams }: { searchParams: Promise<{ tipo?: string }> }) {
+  const portada = await textosPortada("dar-por-dar");
   const { tipo } = await searchParams;
   const elegido = tipo && (TIPOS_ESPACIO as readonly string[]).includes(tipo) ? tipo : "Todos";
   const { espacios, convocatorias } = await darPorDarPublico();
@@ -30,8 +32,8 @@ export default async function DarPorDar({ searchParams }: { searchParams: Promis
     <>
       <Portada
         ceja="Dar por dar"
-        titulo="Gefn"
-        bajada="Gefn, «la que da», es uno de los nombres de Freyja. Un puente entre quienes quieren dar y quienes lo necesitan. Espacios comunitarios que trabajan por el bien común, y personas que quieren sumarse. Nosotros solo hacemos el puente."
+        titulo={portada.titulo}
+        bajada={portada.bajada}
       />
 
       <section id="vision" className="seccion sup">

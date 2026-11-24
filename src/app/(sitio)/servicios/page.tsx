@@ -4,18 +4,20 @@ import { Contacto } from "@/components/Contacto";
 import { Diapositivas } from "@/components/Diapositivas";
 import { IMAGENES_PORTADA, Portada } from "@/components/Portada";
 import { serviciosPublicados } from "@/lib/datos";
+import { textosPortada } from "@/lib/portadas";
 
 export const revalidate = 60;
 export const metadata: Metadata = { title: "Servicios" };
 
 export default async function Servicios() {
+  const portada = await textosPortada("servicios");
   const servicios = await serviciosPublicados();
   return (
     <>
       <Portada
         ceja="Servicios"
-        titulo="Heimdall"
-        bajada="El guardián del puente acompaña a quien lo cruza. Estos son los servicios que Bifröst brinda en forma directa, más allá de los talleres."
+        titulo={portada.titulo}
+        bajada={portada.bajada}
       />
       <section className="seccion" style={{ paddingTop: 32 }}>
         <div className="ancho">

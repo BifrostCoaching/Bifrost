@@ -6,6 +6,7 @@ import { datosCampus } from "@/lib/campus";
 import { rango } from "@/lib/format";
 import type { Cuando, Evento, Modulo, Taller } from "@/lib/types";
 import { agregarPlan, borrarPlan, inscribirme, marcarModulo, salirCampus } from "./acciones";
+import { textosPortada } from "@/lib/portadas";
 
 export const metadata: Metadata = { title: "Campus", robots: { index: false } };
 
@@ -49,6 +50,7 @@ function desdeElCentro<T>(lista: T[]): T[] {
 }
 
 export default async function Campus({ searchParams }: { searchParams: Promise<{ seccion?: string; taller?: string }> }) {
+  const portada = await textosPortada("campus");
   const { participante, talleres: todos, eventos, inscripciones, modulos, hechos, agenda } = await datosCampus();
   const { seccion, taller: tallerSel } = await searchParams;
   const tab: Seccion = SECCIONES.some(([s]) => s === seccion) ? (seccion as Seccion) : "bosque";
@@ -75,7 +77,7 @@ export default async function Campus({ searchParams }: { searchParams: Promise<{
 
   return (
     <>
-      <Portada ceja="Campus" titulo="Midgard" bajada="El mundo de las personas, el recinto del medio. Tu bosque de talleres, tu agenda, los eventos y los talleres en los que estás, todo en un mismo lugar." />
+      <Portada ceja="Campus" titulo={portada.titulo} bajada={portada.bajada} />
       <section id="campus" className="seccion">
         <div className="ancho">
           <div style={{ display: "flex", flexWrap: "wrap", alignItems: "center", justifyContent: "space-between", gap: 16, marginBottom: 36 }}>

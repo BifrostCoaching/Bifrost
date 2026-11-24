@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 import { requireEquipo } from "@/lib/supabase/equipo";
 import type { Post } from "@/lib/types";
 import { borrarPost } from "../../../acciones";
+import { temasBlog } from "@/lib/datos";
 import { FormPost } from "./FormPost";
 
 type Props = { params: Promise<{ id: string }>; searchParams: Promise<{ guardado?: string }> };
@@ -29,7 +30,7 @@ export default async function EditarPost({ params, searchParams }: Props) {
           <Link href={`/blog/${post.slug}`} target="_blank">Ver cómo se ve en el sitio ↗</Link>
         </p>
       )}
-      <FormPost post={post} />
+      <FormPost post={post} temas={await temasBlog()} />
       {post && (
         <form action={borrarPost} style={{ marginTop: "2rem" }}>
           <input type="hidden" name="id" value={post.id} />
