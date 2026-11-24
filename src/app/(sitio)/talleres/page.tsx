@@ -29,7 +29,7 @@ export default async function Talleres() {
           )}
         </div>
       </section>
-      <Contacto talleres={talleres.map((t) => t.nombre)} />
+      <Contacto />
     </>
   );
 }

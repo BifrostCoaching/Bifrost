@@ -2,6 +2,7 @@
 import { useActionState } from "react";
 import { guardarEvento, type EstadoPanel } from "../../../acciones";
 import type { Evento } from "@/lib/types";
+import { EditorImagenes } from "../../componentes/EditorImagenes";
 
 export function FormEvento({ evento: e }: { evento: Evento | null }) {
   const [estado, accion, guardando] = useActionState<EstadoPanel, FormData>(guardarEvento, null);
@@ -49,6 +50,12 @@ export function FormEvento({ evento: e }: { evento: Evento | null }) {
         Descripción
         <textarea name="descripcion" defaultValue={e?.descripcion} />
       </label>
+      <EditorImagenes
+        carpeta="eventos"
+        iniciales={e?.imagen ? [e.imagen] : []}
+        max={1}
+        ayuda="Opcional. Se muestra junto al evento en el calendario y en el campus."
+      />
       <label className="check">
         <input name="publicado" type="checkbox" defaultChecked={e?.publicado ?? false} /> Publicado en el sitio
       </label>

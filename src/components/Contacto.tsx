@@ -12,7 +12,7 @@ function Dato({ valor, href, texto }: { valor: string; href: string; texto?: str
   );
 }
 
-export async function Contacto({ talleres }: { talleres: string[] }) {
+export async function Contacto() {
   const c = await datosContacto();
   const wa = c.whatsapp.replace(/\D/g, "");
   const ig = c.instagram.replace(/^@/, "").replace(/^https?:\/\/(www\.)?instagram\.com\//, "").replace(/\/$/, "");
@@ -20,7 +20,7 @@ export async function Contacto({ talleres }: { talleres: string[] }) {
   return (
     <section id="contacto" className="seccion sup borde">
       <div className="ancho">
-        <FormContacto talleres={talleres}>
+        <FormContacto>
           <div style={{ flex: "1 1 520px", minWidth: 0 }}>
             <p className="ceja">Contacto</p>
             <h2 className="h2">¿Hablamos?</h2>

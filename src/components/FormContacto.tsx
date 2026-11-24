@@ -2,7 +2,7 @@
 import { useActionState, useState } from "react";
 import { enviarConsulta, type EstadoForm } from "@/app/acciones";
 
-export function FormContacto({ talleres, children }: { talleres: string[]; children: React.ReactNode }) {
+export function FormContacto({ children }: { children: React.ReactNode }) {
   const [abierto, setAbierto] = useState(false);
   const [estado, accion, enviando] = useActionState<EstadoForm, FormData>(enviarConsulta, null);
   return (
@@ -32,9 +32,8 @@ export function FormContacto({ talleres, children }: { talleres: string[]; child
             <div className="campo todo">
               <label htmlFor="c-motivo">Motivo</label>
               <select id="c-motivo" name="motivo">
-                {talleres.map((t) => (
-                  <option key={t}>{t}</option>
-                ))}
+                <option>Talleres</option>
+                <option>Servicios</option>
                 <option>Quiero un espacio para mi equipo</option>
                 <option>Quiero sumarme como profesional</option>
                 <option>Otra consulta</option>

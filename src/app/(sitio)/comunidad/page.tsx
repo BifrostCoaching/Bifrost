@@ -63,7 +63,7 @@ export default async function PaginaComunidad({ searchParams }: { searchParams: 
           </div>
         </div>
       </section>
-      <Contacto talleres={nombres} />
+      <Contacto />
     </>
   );
 }

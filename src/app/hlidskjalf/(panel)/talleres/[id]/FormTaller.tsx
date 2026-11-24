@@ -2,6 +2,7 @@
 import { useActionState, useState } from "react";
 import { guardarTaller, type EstadoPanel } from "../../../acciones";
 import type { Taller } from "@/lib/types";
+import { EditorImagenes } from "../../componentes/EditorImagenes";
 
 export function FormTaller({ taller }: { taller: Taller | null }) {
   const [estado, accion, guardando] = useActionState<EstadoPanel, FormData>(guardarTaller, null);
@@ -67,6 +68,11 @@ export function FormTaller({ taller }: { taller: Taller | null }) {
           </label>
         </>
       )}
+      <EditorImagenes
+        carpeta="talleres"
+        iniciales={t?.imagenes ?? []}
+        ayuda="Se muestran en la tarjeta del taller, pasando una tras otra. La primera es la principal. Si no cargás ninguna, el sitio usa las fotos de muestra."
+      />
       <div className="doble">
         <label>
           Orden en la lista

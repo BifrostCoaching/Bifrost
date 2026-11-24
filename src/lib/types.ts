@@ -13,6 +13,7 @@ export type Taller = {
   precio_texto: string;
   publicado: boolean;
   orden: number;
+  imagenes?: string[];
 };
 
 export type Evento = {
@@ -26,6 +27,7 @@ export type Evento = {
   precio_texto: string;
   descripcion: string;
   publicado: boolean;
+  imagen?: string;
 };
 
 export type EstadoInteresado = "nuevo" | "contactado" | "inscripto" | "descartado";
@@ -81,3 +83,16 @@ export type Inscripcion = { id: string; participante_id: string; taller_id: stri
 export type Modulo = { id: string; taller_id: string; numero: number; titulo: string; clases: string; materiales: string };
 export type Cuando = "semana" | "mes" | "anio" | "largo";
 export type ItemAgenda = { id: string; texto: string; cuando: Cuando; created_at: string };
+
+export type Servicio = {
+  id: string;
+  nombre: string;
+  bajada: string;
+  descripcion: string;
+  para_quien: string;
+  modalidad: string;
+  precio_texto: string;
+  imagenes: string[];
+  publicado: boolean;
+  orden: number;
+};
