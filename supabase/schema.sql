@@ -140,6 +140,15 @@ drop policy if exists "equipo gestiona consultas" on public.consultas;
 create policy "equipo gestiona consultas" on public.consultas
   for all using (public.es_equipo()) with check (public.es_equipo());
 
+-- ───────────────────────── Permisos ─────────────────────────
+-- Las reglas de arriba deciden qué filas ve cada uno; esto habilita las tablas para el sitio.
+grant usage on schema public to anon, authenticated, service_role;
+grant select on public.talleres, public.eventos to anon;
+grant select, insert, update, delete on public.talleres, public.eventos, public.interesados, public.consultas to authenticated;
+grant select on public.equipo to authenticated;
+grant all on all tables in schema public to service_role;
+grant execute on function public.es_equipo() to anon, authenticated;
+
 -- ───────────────────────── Datos iniciales ─────────────────────────
 -- El email del equipo: cambialo o sumá más filas si hace falta.
 insert into public.equipo (email, nombre) values

@@ -1,6 +1,6 @@
-import Link from "next/link";
 import { requireEquipo } from "@/lib/supabase/equipo";
 import { salir } from "../acciones";
+import { NavPanel } from "./NavPanel";
 
 export const dynamic = "force-dynamic";
 
@@ -9,18 +9,12 @@ export default async function PanelLayout({ children }: { children: React.ReactN
   return (
     <div className="panel">
       <aside>
-        <nav className="panel-nav" aria-label="Panel">
-          <Link href="/hlidskjalf">Resumen</Link>
-          <Link href="/hlidskjalf/talleres">Talleres</Link>
-          <Link href="/hlidskjalf/eventos">Eventos</Link>
-          <Link href="/hlidskjalf/interesados">Interesados</Link>
-          <Link href="/hlidskjalf/consultas">Consultas</Link>
-        </nav>
-        <p className="apagado" style={{ fontSize: "0.85rem", marginTop: "1.5rem" }}>
+        <NavPanel />
+        <p className="apagado" style={{ fontSize: "0.9rem", margin: "24px 0 10px", wordBreak: "break-all" }}>
           {user.email}
         </p>
         <form action={salir}>
-          <button className="boton secundario chico">Salir</button>
+          <button className="boton secundario">Salir</button>
         </form>
       </aside>
       <div>{children}</div>
