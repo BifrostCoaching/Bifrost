@@ -13,7 +13,7 @@ export default async function PanelLayout({ children }: { children: React.ReactN
           <Link href="/hlidskjalf">Resumen</Link>
           <Link href="/hlidskjalf/talleres">Talleres</Link>
           <Link href="/hlidskjalf/eventos">Eventos</Link>
-          <Link href="/hlidskjalf/inscripciones">Inscripciones</Link>
+          <Link href="/hlidskjalf/interesados">Interesados</Link>
           <Link href="/hlidskjalf/consultas">Consultas</Link>
         </nav>
         <p className="apagado" style={{ fontSize: "0.85rem", marginTop: "1.5rem" }}>

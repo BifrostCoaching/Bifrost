@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { requireEquipo } from "@/lib/supabase/equipo";
-import { pesos, rango } from "@/lib/format";
+import { rango } from "@/lib/format";
 import type { Taller } from "@/lib/types";
 
 export default async function TalleresPanel() {
@@ -22,7 +22,7 @@ export default async function TalleresPanel() {
             <tr>
               <th>Taller</th>
               <th>Fechas</th>
-              <th>Cobro online</th>
+              <th>Inversión</th>
               <th>Estado</th>
             </tr>
           </thead>
@@ -38,7 +38,7 @@ export default async function TalleresPanel() {
                   <Link href={`/hlidskjalf/talleres/${t.id}`}>{t.nombre}</Link>
                 </td>
                 <td>{rango(t.inicio, t.fin)}</td>
-                <td>{t.tipo === "gratuito" ? "Gratuito" : t.monto_online ? pesos(t.monto_online) : "Sin habilitar"}</td>
+                <td>{t.tipo === "gratuito" ? "Gratuito" : t.precio_texto || "[PENDIENTE]"}</td>
                 <td>{t.publicado ? "Publicado" : "Borrador"}</td>
               </tr>
             ))}

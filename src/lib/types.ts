@@ -11,9 +11,6 @@ export type Taller = {
   encuentros: number | null;
   tipo: "pago" | "gratuito";
   precio_texto: string;
-  monto_online: number | null;
-  concepto_online: string;
-  cupo: number | null;
   publicado: boolean;
   orden: number;
 };
@@ -31,18 +28,16 @@ export type Evento = {
   publicado: boolean;
 };
 
-export type EstadoInscripcion = "pendiente_pago" | "confirmada" | "rechazada" | "cancelada";
+export type EstadoInteresado = "nuevo" | "contactado" | "inscripto" | "descartado";
 
-export type Inscripcion = {
+export type Interesado = {
   id: string;
-  taller_id: string;
+  taller_id: string | null;
   nombre: string;
   email: string;
   telefono: string;
-  estado: EstadoInscripcion;
-  monto: number | null;
-  mp_payment_id: string | null;
-  mp_status: string | null;
+  comentario: string;
+  estado: EstadoInteresado;
   notas: string;
   created_at: string;
   talleres?: { nombre: string } | null;

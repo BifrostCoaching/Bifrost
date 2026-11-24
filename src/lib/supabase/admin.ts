@@ -4,7 +4,7 @@ import { supabaseUrl } from "./env";
 
 /**
  * Cliente con la clave de servicio. Saltea las reglas de seguridad, así que se usa
- * únicamente en el servidor y solo para escribir inscripciones, consultas y pagos.
+ * únicamente en el servidor y solo para guardar interesados y consultas.
  */
 export function createAdminClient() {
   const key = process.env.SUPABASE_SERVICE_ROLE_KEY;

@@ -31,7 +31,7 @@ export default async function Talleres() {
                   <p className="apagado">{t.bajada}</p>
                   <p>{t.descripcion}</p>
                   <Link href={`/talleres/${t.slug}`} className="boton">
-                    {t.tipo === "pago" && t.monto_online ? "Ver detalle e inscribirme" : "Ver detalle"}
+                    Ver detalle · Me interesa
                   </Link>
                 </div>
                 <dl className="datos">

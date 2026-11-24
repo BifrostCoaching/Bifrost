@@ -4,7 +4,7 @@ import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { requireEquipo } from "@/lib/supabase/equipo";
 import { slugify } from "@/lib/format";
-import type { EstadoInscripcion } from "@/lib/types";
+import type { EstadoInteresado } from "@/lib/types";
 
 // ───────── Sesión ─────────
 
@@ -38,12 +38,6 @@ function enteroONull(fd: FormData, k: string): number | null {
   const n = Number.parseInt(v, 10);
   return Number.isFinite(n) && n > 0 ? n : null;
 }
-function montoONull(fd: FormData, k: string): number | null {
-  const v = txt(fd, k, 20).replace(/[$\s.]/g, "").replace(",", ".");
-  if (!v) return null;
-  const n = Number(v);
-  return Number.isFinite(n) && n > 0 ? Math.round(n * 100) / 100 : null;
-}
 function revalidarSitio() {
   revalidatePath("/", "layout");
 }
@@ -71,9 +65,6 @@ export async function guardarTaller(_prev: EstadoPanel, fd: FormData): Promise<E
     encuentros: enteroONull(fd, "encuentros"),
     tipo,
     precio_texto: txt(fd, "precio_texto", 300),
-    monto_online: tipo === "pago" ? montoONull(fd, "monto_online") : null,
-    concepto_online: txt(fd, "concepto_online", 120),
-    cupo: enteroONull(fd, "cupo"),
     publicado: fd.get("publicado") === "on",
     orden: Number.parseInt(txt(fd, "orden", 6) || "0", 10) || 0,
   };
@@ -95,7 +86,7 @@ export async function borrarTaller(fd: FormData) {
   const id = txt(fd, "id", 60);
   const { error } = await supabase.from("talleres").delete().eq("id", id);
   if (error) {
-    // Si tiene inscripciones no se borra: se despublica para no perder el registro.
+    // Si tiene interesados no se borra: se despublica para no perder el registro.
     await supabase.from("talleres").update({ publicado: false }).eq("id", id);
   }
   revalidarSitio();
@@ -136,16 +127,16 @@ export async function borrarEvento(fd: FormData) {
   redirect("/hlidskjalf/eventos");
 }
 
-// ───────── Inscripciones y consultas ─────────
+// ───────── Interesados y consultas ─────────
 
-const ESTADOS: EstadoInscripcion[] = ["pendiente_pago", "confirmada", "rechazada", "cancelada"];
+const ESTADOS: EstadoInteresado[] = ["nuevo", "contactado", "inscripto", "descartado"];
 
-export async function cambiarEstadoInscripcion(fd: FormData) {
+export async function actualizarInteresado(fd: FormData) {
   const { supabase } = await requireEquipo();
-  const estado = txt(fd, "estado") as EstadoInscripcion;
+  const estado = txt(fd, "estado") as EstadoInteresado;
   if (!ESTADOS.includes(estado)) return;
-  await supabase.from("inscripciones").update({ estado }).eq("id", txt(fd, "id", 60));
-  revalidatePath("/hlidskjalf/inscripciones");
+  await supabase.from("interesados").update({ estado, notas: txt(fd, "notas", 2000) }).eq("id", txt(fd, "id", 60));
+  revalidatePath("/hlidskjalf/interesados");
 }
 
 export async function marcarConsulta(fd: FormData) {

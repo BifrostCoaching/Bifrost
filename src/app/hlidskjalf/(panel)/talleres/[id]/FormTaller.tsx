@@ -58,10 +58,6 @@ export function FormTaller({ taller }: { taller: Taller | null }) {
             <option value="gratuito">Gratuito</option>
           </select>
         </label>
-        <label>
-          Cupo <small>(vacío = sin límite)</small>
-          <input name="cupo" type="number" min={1} defaultValue={t?.cupo ?? ""} />
-        </label>
       </div>
       {tipo === "pago" && (
         <>
@@ -69,16 +65,6 @@ export function FormTaller({ taller }: { taller: Taller | null }) {
             Inversión, como se muestra en el sitio
             <input name="precio_texto" defaultValue={t?.precio_texto} placeholder="$115.000 transferencia · $127.000 con tarjeta" />
           </label>
-          <div className="doble">
-            <label>
-              Monto a cobrar con Mercado Pago <small>(en pesos; vacío = sin inscripción online)</small>
-              <input name="monto_online" inputMode="decimal" defaultValue={t?.monto_online ?? ""} placeholder="38100" />
-            </label>
-            <label>
-              Qué se cobra <small>(ej.: Seña del 30%)</small>
-              <input name="concepto_online" defaultValue={t?.concepto_online} placeholder="Seña del 30%" />
-            </label>
-          </div>
         </>
       )}
       <div className="doble">

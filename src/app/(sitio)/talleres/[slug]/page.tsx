@@ -1,9 +1,9 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import Link from "next/link";
-import { FormInscripcion } from "@/components/FormInscripcion";
+import { FormInteres } from "@/components/FormInteres";
 import { tallerPorSlug } from "@/lib/datos";
-import { pesos, rango } from "@/lib/format";
+import { rango } from "@/lib/format";
 
 export const revalidate = 60;
 
@@ -17,8 +17,6 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 export default async function TallerPage({ params }: Props) {
   const t = await tallerPorSlug((await params).slug);
   if (!t) notFound();
-
-  const inscripcionOnline = t.tipo === "gratuito" || !!t.monto_online;
 
   return (
     <section className="seccion">
@@ -55,24 +53,11 @@ export default async function TallerPage({ params }: Props) {
             </dl>
 
             <div className="caja" id="inscripcion">
-              <h2 style={{ fontSize: "1.4rem" }}>Inscribite</h2>
-              {inscripcionOnline ? (
-                <>
-                  {t.tipo === "pago" && (
-                    <p className="apagado">
-                      Pagás {t.concepto_online ? <strong>{t.concepto_online.toLowerCase()}</strong> : "online"} de{" "}
-                      <strong>{pesos(t.monto_online)}</strong> con Mercado Pago. El pago se hace en la página de
-                      Mercado Pago: los datos de tu tarjeta no pasan por este sitio.
-                    </p>
-                  )}
-                  <FormInscripcion tallerId={t.id} pago={t.tipo === "pago"} />
-                </>
-              ) : (
-                <p className="apagado">
-                  La inscripción online todavía no está habilitada. Escribinos desde el{" "}
-                  <Link href="/#contacto">formulario de contacto</Link> y te reservamos el lugar.
-                </p>
-              )}
+              <h2 style={{ fontSize: "1.4rem" }}>¿Te interesa?</h2>
+              <p className="apagado">
+                Dejanos tus datos y alguien del equipo te contacta para contarte los detalles y reservar tu lugar.
+              </p>
+              <FormInteres tallerId={t.id} />
             </div>
           </div>
         </div>

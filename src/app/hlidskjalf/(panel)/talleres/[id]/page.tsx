@@ -30,7 +30,7 @@ export default async function EditarTaller({ params, searchParams }: Props) {
           <input type="hidden" name="id" value={taller.id} />
           <button className="boton peligro chico">Eliminar taller</button>
           <p className="apagado" style={{ fontSize: "0.9rem", marginTop: "0.5rem" }}>
-            Si ya tiene inscripciones, no se borra: queda despublicado para no perder el registro.
+            Si ya tiene interesados, no se borra: queda despublicado para no perder el registro.
           </p>
         </form>
       )}

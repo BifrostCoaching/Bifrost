@@ -1,9 +1,10 @@
 "use client";
 import { useActionState } from "react";
-import { inscribirse, type EstadoForm } from "@/app/acciones";
+import { registrarInteres, type EstadoForm } from "@/app/acciones";
 
-export function FormInscripcion({ tallerId, pago }: { tallerId: string; pago: boolean }) {
-  const [estado, accion, enviando] = useActionState<EstadoForm, FormData>(inscribirse, null);
+export function FormInteres({ tallerId }: { tallerId: string }) {
+  const [estado, accion, enviando] = useActionState<EstadoForm, FormData>(registrarInteres, null);
+  if (estado?.ok) return <p className="aviso" role="status">{estado.mensaje}</p>;
   return (
     <form action={accion} className="form">
       <input type="hidden" name="taller_id" value={tallerId} />
@@ -16,8 +17,12 @@ export function FormInscripcion({ tallerId, pago }: { tallerId: string; pago: bo
         <input name="email" type="email" required maxLength={200} autoComplete="email" />
       </label>
       <label>
-        Teléfono <small>(opcional, para avisos del taller)</small>
+        Teléfono o WhatsApp <small>(opcional)</small>
         <input name="telefono" type="tel" maxLength={40} autoComplete="tel" />
+      </label>
+      <label>
+        ¿Querés contarnos algo? <small>(opcional)</small>
+        <textarea name="comentario" maxLength={2000} style={{ minHeight: "5rem" }} />
       </label>
       <div className="trampa" aria-hidden="true">
         <label>
@@ -28,7 +33,7 @@ export function FormInscripcion({ tallerId, pago }: { tallerId: string; pago: bo
       {estado && !estado.ok && <p className="aviso error" role="alert">{estado.mensaje}</p>}
       <div>
         <button className="boton" disabled={enviando}>
-          {enviando ? "Un momento…" : pago ? "Ir a pagar con Mercado Pago" : "Confirmar inscripción"}
+          {enviando ? "Enviando…" : "Me interesa"}
         </button>
       </div>
     </form>

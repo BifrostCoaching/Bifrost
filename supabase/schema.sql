@@ -36,10 +36,6 @@ create table if not exists public.talleres (
   encuentros integer,
   tipo text not null default 'pago' check (tipo in ('pago', 'gratuito')),
   precio_texto text not null default '',
-  -- Lo que se cobra online con Mercado Pago (en pesos). Vacío = sin inscripción online.
-  monto_online numeric(12, 2) check (monto_online is null or monto_online > 0),
-  concepto_online text not null default '',
-  cupo integer check (cupo is null or cupo > 0),
   publicado boolean not null default false,
   orden integer not null default 0,
   created_at timestamptz not null default now(),
@@ -62,24 +58,22 @@ create table if not exists public.eventos (
   updated_at timestamptz not null default now()
 );
 
--- ───────────────────────── Inscripciones ─────────────────────────
-create table if not exists public.inscripciones (
+-- ───────────────────────── Interesados ─────────────────────────
+-- Personas que dejaron sus datos en "Me interesa". El equipo de ventas las contacta.
+create table if not exists public.interesados (
   id uuid primary key default gen_random_uuid(),
-  taller_id uuid not null references public.talleres (id) on delete restrict,
+  taller_id uuid references public.talleres (id) on delete set null,
   nombre text not null,
   email text not null,
   telefono text not null default '',
-  estado text not null default 'pendiente_pago'
-    check (estado in ('pendiente_pago', 'confirmada', 'rechazada', 'cancelada')),
-  monto numeric(12, 2),
-  mp_preference_id text,
-  mp_payment_id text,
-  mp_status text,
+  comentario text not null default '',
+  estado text not null default 'nuevo'
+    check (estado in ('nuevo', 'contactado', 'inscripto', 'descartado')),
   notas text not null default '',
   created_at timestamptz not null default now(),
   updated_at timestamptz not null default now()
 );
-create index if not exists inscripciones_taller_idx on public.inscripciones (taller_id);
+create index if not exists interesados_taller_idx on public.interesados (taller_id);
 
 -- ───────────────────────── Consultas (formulario de contacto) ─────────────────────────
 create table if not exists public.consultas (
@@ -107,17 +101,17 @@ create trigger talleres_updated before update on public.talleres
 drop trigger if exists eventos_updated on public.eventos;
 create trigger eventos_updated before update on public.eventos
   for each row execute function public.tocar_updated_at();
-drop trigger if exists inscripciones_updated on public.inscripciones;
-create trigger inscripciones_updated before update on public.inscripciones
+drop trigger if exists interesados_updated on public.interesados;
+create trigger interesados_updated before update on public.interesados
   for each row execute function public.tocar_updated_at();
 
 -- ───────────────────────── Seguridad por filas (RLS) ─────────────────────────
 -- El público solo puede LEER talleres y eventos publicados.
--- Inscripciones y consultas las escribe el servidor del sitio; solo el equipo las lee.
+-- Interesados y consultas los escribe el servidor del sitio; solo el equipo las lee.
 alter table public.equipo enable row level security;
 alter table public.talleres enable row level security;
 alter table public.eventos enable row level security;
-alter table public.inscripciones enable row level security;
+alter table public.interesados enable row level security;
 alter table public.consultas enable row level security;
 
 drop policy if exists "equipo se ve a sí mismo" on public.equipo;
@@ -138,8 +132,8 @@ drop policy if exists "equipo edita eventos" on public.eventos;
 create policy "equipo edita eventos" on public.eventos
   for all using (public.es_equipo()) with check (public.es_equipo());
 
-drop policy if exists "equipo gestiona inscripciones" on public.inscripciones;
-create policy "equipo gestiona inscripciones" on public.inscripciones
+drop policy if exists "equipo gestiona interesados" on public.interesados;
+create policy "equipo gestiona interesados" on public.interesados
   for all using (public.es_equipo()) with check (public.es_equipo());
 
 drop policy if exists "equipo gestiona consultas" on public.consultas;
@@ -160,7 +154,7 @@ values
     'Vestirse también es comunicar',
     'Taller de imagen y coaching · en alianza con Benaroma',
     'La forma en que nos vestimos habla antes que nosotros. Juntamos imagen y coaching para descubrir por qué tu ropa te abre o te cierra puertas, y para que tu imagen muestre quién querés ser, sin reglas rígidas.',
-    E'Mar 15/12 · Apreciatividad\nMié 16/12 · Los bordes\nJue 17/12 · Seguridad\nSáb 19/12 · Creatividad y autenticidad (presencial)\n\nLo dictan Silvia (Benaroma) y Marcos. Reservás con una seña del 30% y abonás el saldo hasta 48 horas antes.',
+    E'Mar 15/12 · Apreciatividad\nMié 16/12 · Los bordes\nJue 17/12 · Seguridad\nSáb 19/12 · Creatividad y autenticidad (presencial)\n\nLo dictan Silvia (Benaroma) y Marcos.',
     '2026-12-15', '2026-12-19',
     '3 encuentros virtuales por Zoom, de 19 a 21:30 h, y 1 presencial con brunch',
     4, 'pago',

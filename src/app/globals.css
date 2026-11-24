@@ -178,6 +178,7 @@ textarea { min-height: 7rem; resize: vertical; }
 .tabla th { background: #e8edeb; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.06em; }
 .tabla-scroll { overflow-x: auto; }
 .fila-acciones { display: flex; flex-wrap: wrap; gap: 0.4rem; align-items: center; }
-.estado-confirmada { color: #0b4a3e; font-weight: 600; }
-.estado-pendiente_pago { color: var(--ambar-texto); font-weight: 600; }
-.estado-rechazada, .estado-cancelada { color: var(--error); font-weight: 600; }
+.estado-inscripto { color: #0b4a3e; font-weight: 600; }
+.estado-nuevo { color: var(--ambar-texto); font-weight: 600; }
+.estado-contactado { color: var(--verde); font-weight: 600; }
+.estado-descartado { color: var(--error); font-weight: 600; }

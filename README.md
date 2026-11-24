@@ -2,21 +2,20 @@
 
 Sitio de Bifröst: un puente entre donde estás y donde querés llegar.
 
-Esta primera etapa incluye **Inicio**, **Talleres** (con inscripción y cobro por Mercado Pago), **Calendario** (con el calendario de Google de Bifröst) y **Hliðskjálf**, el panel del equipo con login. Comunidad y Campus vienen en la etapa siguiente.
+Esta primera etapa incluye **Inicio**, **Talleres** (con el botón "Me interesa" para dejar los datos), **Calendario** (con el calendario de Google de Bifröst) y **Hliðskjálf**, el panel del equipo con login. Comunidad y Campus vienen en la etapa siguiente.
 
 Hecho con Next.js (se publica en Vercel) y Supabase (login y base de datos).
 
 ---
 
-## Cómo se protege el dinero y los datos
+## Cómo se cuidan los datos
 
-- **Los datos de tarjeta nunca pasan por este sitio.** Usamos Mercado Pago Checkout Pro: cuando alguien se inscribe, el sitio lo manda a la página de Mercado Pago, paga ahí y vuelve. Bifröst nunca ve ni guarda números de tarjeta.
-- **Las claves van en variables de entorno, nunca en el código.** El Access Token de Mercado Pago y la clave de servicio de Supabase se cargan en Vercel. El archivo `.gitignore` impide subir archivos `.env` al repositorio.
-- **Una inscripción se confirma solo cuando Mercado Pago lo dice.** El aviso de pago se verifica con la firma secreta de Mercado Pago y, además, el sitio le consulta el pago directamente a Mercado Pago y controla que el monto coincida.
+- **El sitio no cobra.** Quien quiere anotarse deja su nombre, email y teléfono en "Me interesa", y el equipo de ventas lo contacta. El cobro online queda para más adelante, cuando esté resuelto lo fiscal.
+- **Las claves van en variables de entorno, nunca en el código.** La clave de servicio de Supabase se carga en Vercel. El archivo `.gitignore` impide subir archivos `.env` al repositorio.
 - **El panel solo lo usa el equipo.** Hace falta iniciar sesión y que el email esté en la tabla `equipo`. La base tiene reglas de seguridad por filas: el público solo puede leer talleres y eventos publicados.
 - **Los formularios tienen protección básica contra robots** (un campo trampa invisible).
 
-Recomendaciones: activá la verificación en dos pasos en Mercado Pago, GitHub, Vercel y Supabase, y no compartas las claves por chat ni por email.
+Recomendación: activá la verificación en dos pasos en GitHub, Vercel y Supabase.
 
 ---
 
@@ -31,18 +30,7 @@ Recomendaciones: activá la verificación en dos pasos en Mercado Pago, GitHub, 
 4. En **Authentication > Users > Add user**, creá el usuario `bifrost1203@gmail.com` con una contraseña fuerte. Con ese email y contraseña entrás al panel.
 5. En **Project Settings > API** copiá: `Project URL`, la clave `anon public` y la clave `service_role` (esta última es secreta).
 
-### 2. Mercado Pago
-
-1. Entrá a [Tus integraciones](https://www.mercadopago.com.ar/developers/panel/app) y creá una aplicación (tipo: pagos online, Checkout Pro).
-2. En **Credenciales de producción**, copiá el **Access Token** (es secreto).
-3. En **Webhooks > Configurar notificaciones**:
-   - URL de producción: `https://TU-DOMINIO/api/mercadopago/webhook`
-   - Evento: **Pagos**
-   - Guardá y copiá la **clave secreta** que te muestra.
-
-> Para probar sin plata real, Mercado Pago ofrece credenciales de prueba y usuarios de prueba en el mismo panel.
-
-### 3. Vercel (publicación)
+### 2. Vercel (publicación)
 
 1. Entrá a [vercel.com](https://vercel.com) con tu cuenta de GitHub e importá el repositorio `BifrostCoaching/Bifrost`.
 2. En **Settings > Environment Variables** cargá las variables de [`.env.example`](.env.example):
@@ -53,13 +41,11 @@ Recomendaciones: activá la verificación en dos pasos en Mercado Pago, GitHub, 
    | `NEXT_PUBLIC_SUPABASE_URL` | Supabase · Project URL |
    | `NEXT_PUBLIC_SUPABASE_ANON_KEY` | Supabase · anon public |
    | `SUPABASE_SERVICE_ROLE_KEY` | Supabase · service_role (secreta) |
-   | `MP_ACCESS_TOKEN` | Mercado Pago · Access Token de producción (secreto) |
-   | `MP_WEBHOOK_SECRET` | Mercado Pago · clave secreta de Webhooks (secreta) |
    | `NEXT_PUBLIC_GOOGLE_CALENDAR_ID` | Ya viene cargado con el calendario de Bifröst |
 
 3. Publicá (**Deploy**). Si después cambiás alguna variable, volvé a publicar.
 
-### 4. Google Calendar
+### 3. Google Calendar
 
 El calendario de Bifröst tiene que estar **público** para que se vea en el sitio: en Google Calendar, Configuración del calendario > Permisos de acceso > **Hacer que esté disponible públicamente**.
 
@@ -69,9 +55,9 @@ El calendario de Bifröst tiene que estar **público** para que se vea en el sit
 
 Entrás desde el pie del sitio (**Ingreso del equipo**) o en `/hlidskjalf`.
 
-- **Talleres**: creás o editás talleres. Para habilitar la inscripción online de un taller pago, completá **Monto a cobrar con Mercado Pago** (por ejemplo, la seña) y **Qué se cobra** (por ejemplo, "Seña del 30%"). Si lo dejás vacío, el taller se ve pero invita a escribir por el formulario de contacto.
+- **Talleres**: creás o editás talleres y elegís cuáles se ven en el sitio.
 - **Eventos**: actividades sueltas que aparecen en el Calendario.
-- **Inscripciones**: quién se anotó y en qué estado está el pago. Las pagas con Mercado Pago se confirman solas; las que te pagan por transferencia o en efectivo las confirmás a mano.
+- **Interesados**: quién tocó "Me interesa" y en qué taller. El equipo de ventas marca a cada persona como contactada, inscripta o descartada, y puede dejar notas.
 - **Consultas**: los mensajes del formulario de contacto.
 
 ---
@@ -87,5 +73,5 @@ npm run dev                  # http://localhost:3000
 ## Datos pendientes
 
 - Email, WhatsApp e Instagram de contacto de Bifröst: [PENDIENTE] (en `src/lib/site.ts`).
-- Monto a cobrar online para "Vestirse también es comunicar" (seña o total): [PENDIENTE], se carga desde el panel.
+- Cobro online con Mercado Pago: para más adelante, cuando esté resuelto lo fiscal.
 - Fechas, modalidad y precio de "El presupuesto como conversación": [PENDIENTE].

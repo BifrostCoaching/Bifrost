@@ -9,10 +9,10 @@ export default async function Resumen() {
     const { count } = await q;
     return count ?? 0;
   };
-  const [talleres, confirmadas, pendientes, consultas] = await Promise.all([
+  const [talleres, nuevos, inscriptos, consultas] = await Promise.all([
     contar("talleres", ["publicado", true]),
-    contar("inscripciones", ["estado", "confirmada"]),
-    contar("inscripciones", ["estado", "pendiente_pago"]),
+    contar("interesados", ["estado", "nuevo"]),
+    contar("interesados", ["estado", "inscripto"]),
     contar("consultas", ["leida", false]),
   ]);
   return (
@@ -25,10 +25,10 @@ export default async function Resumen() {
           <span className="ceja">Talleres publicados</span>
           <h2>{talleres}</h2>
         </Link>
-        <Link href="/hlidskjalf/inscripciones" className="tarjeta">
-          <span className="ceja">Inscripciones confirmadas</span>
-          <h2>{confirmadas}</h2>
-          <span className="apagado">{pendientes} con pago pendiente</span>
+        <Link href="/hlidskjalf/interesados" className="tarjeta">
+          <span className="ceja">Interesados para contactar</span>
+          <h2>{nuevos}</h2>
+          <span className="apagado">{inscriptos} ya inscriptos</span>
         </Link>
         <Link href="/hlidskjalf/consultas" className="tarjeta">
           <span className="ceja">Consultas sin leer</span>
