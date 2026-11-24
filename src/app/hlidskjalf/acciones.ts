@@ -193,3 +193,24 @@ export async function moderar(fd: FormData) {
   revalidatePath("/comunidad");
   revalidatePath("/hlidskjalf/comunidad");
 }
+
+// ───────── Frases de Ratatoskr ─────────
+
+export async function guardarFrase(fd: FormData) {
+  const { supabase } = await requireEquipo();
+  const id = txt(fd, "id", 60);
+  const texto = txt(fd, "texto", 140);
+  if (!texto) return;
+  const fila = { texto, orden: Number.parseInt(txt(fd, "orden", 6) || "0", 10) || 0, activa: fd.get("activa") === "on" };
+  if (id) await supabase.from("frases_ratatoskr").update(fila).eq("id", id);
+  else await supabase.from("frases_ratatoskr").insert(fila);
+  revalidatePath("/comunidad");
+  revalidatePath("/hlidskjalf/comunidad/ratatoskr");
+}
+
+export async function borrarFrase(fd: FormData) {
+  const { supabase } = await requireEquipo();
+  await supabase.from("frases_ratatoskr").delete().eq("id", txt(fd, "id", 60));
+  revalidatePath("/comunidad");
+  revalidatePath("/hlidskjalf/comunidad/ratatoskr");
+}

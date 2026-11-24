@@ -50,6 +50,9 @@ export default async function ComunidadPanel({ searchParams }: { searchParams: P
             {s.nombre}
           </Link>
         ))}
+        <Link href="/hlidskjalf/comunidad/ratatoskr" className="chip">
+          Frases de Ratatoskr
+        </Link>
       </div>
       <h2 style={{ marginTop: 0 }}>
         {actual.nombre} <small className="apagado">· {actual.lugar}</small>
