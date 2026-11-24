@@ -192,6 +192,43 @@ export async function borrarServicio(fd: FormData) {
   redirect("/hlidskjalf/servicios");
 }
 
+// ───────── Profesionales ─────────
+
+export async function guardarProfesional(_prev: EstadoPanel, fd: FormData): Promise<EstadoPanel> {
+  const { supabase } = await requireEquipo();
+  const id = txt(fd, "id", 60);
+  const nombre = txt(fd, "nombre", 200);
+  if (!nombre) return { ok: false, mensaje: "Falta el nombre." };
+  const fila = {
+    nombre,
+    oficio: txt(fd, "oficio", 200),
+    descripcion: txt(fd, "descripcion"),
+    contacto: txt(fd, "contacto", 300),
+    imagen: leerImagenes(fd.get("imagenes"), 1)[0] ?? "",
+    publicado: fd.get("publicado") === "on",
+    orden: Number.parseInt(txt(fd, "orden", 6) || "0", 10) || 0,
+  };
+  const antes = id ? (await supabase.from("profesionales").select("imagen").eq("id", id).maybeSingle()).data?.imagen : "";
+  const { data, error } = id
+    ? await supabase.from("profesionales").update(fila).eq("id", id).select("id").single()
+    : await supabase.from("profesionales").insert(fila).select("id").single();
+  if (error) return { ok: false, mensaje: `No se pudo guardar: ${error.message}` };
+  await borrarQuitadas(antes ? [antes] : [], fila.imagen ? [fila.imagen] : []);
+  revalidarSitio();
+  if (!id) redirect(`/hlidskjalf/profesionales/${data.id}?guardado=1`);
+  return { ok: true, mensaje: "Guardado. Ya se ve en el sitio." };
+}
+
+export async function borrarProfesional(fd: FormData) {
+  const { supabase } = await requireEquipo();
+  const id = txt(fd, "id", 60);
+  const antes = (await supabase.from("profesionales").select("imagen").eq("id", id).maybeSingle()).data?.imagen;
+  const { error } = await supabase.from("profesionales").delete().eq("id", id);
+  if (!error && antes) await borrarQuitadas([antes], []);
+  revalidarSitio();
+  redirect("/hlidskjalf/profesionales");
+}
+
 // ───────── Interesados y consultas ─────────
 
 const ESTADOS: EstadoInteresado[] = ["nuevo", "contactado", "inscripto", "descartado"];
@@ -255,6 +292,31 @@ export async function moderar(fd: FormData) {
   const estado = txt(fd, "estado", 20);
   if (!TABLAS_COMUNIDAD.includes(tabla) || !["publicado", "pendiente", "oculto"].includes(estado)) return;
   await supabase.from(tabla).update({ estado }).eq("id", txt(fd, "id", 60));
+  revalidatePath("/comunidad");
+  revalidatePath("/hlidskjalf/comunidad");
+}
+
+/** Corrige el texto de algo que dejó la gente (por ejemplo, la ortografía). Solo el equipo. */
+export async function corregirComunidad(fd: FormData) {
+  const { supabase } = await requireEquipo();
+  const tabla = txt(fd, "tabla", 20);
+  if (!TABLAS_COMUNIDAD.includes(tabla)) return;
+  const largo: Record<string, number> = { suenos: 60, experiencias: 220, reflexiones: 3000, foro: 2000 };
+  const texto = txt(fd, "texto", largo[tabla]);
+  if (!texto) return;
+  const cambios: Record<string, string> = { texto };
+  if (fd.has("titulo") && tabla !== "suenos" && tabla !== "experiencias") cambios.titulo = txt(fd, "titulo", 200);
+  await supabase.from(tabla).update(cambios).eq("id", txt(fd, "id", 60));
+  revalidatePath("/comunidad");
+  revalidatePath("/hlidskjalf/comunidad");
+}
+
+/** Borra para siempre algo que dejó la gente. Solo el equipo. */
+export async function borrarComunidad(fd: FormData) {
+  const { supabase } = await requireEquipo();
+  const tabla = txt(fd, "tabla", 20);
+  if (!TABLAS_COMUNIDAD.includes(tabla)) return;
+  await supabase.from(tabla).delete().eq("id", txt(fd, "id", 60));
   revalidatePath("/comunidad");
   revalidatePath("/hlidskjalf/comunidad");
 }

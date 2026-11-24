@@ -1,27 +1,14 @@
 import type { Metadata } from "next";
-import { cookies } from "next/headers";
 import { Contacto } from "@/components/Contacto";
 import { Portada } from "@/components/Portada";
 import { Comunidad, type Seccion } from "@/components/comunidad/Comunidad";
 import { comunidadPublica, talleresPublicados } from "@/lib/datos";
-import { createAdminClient } from "@/lib/supabase/admin";
 import { createClient } from "@/lib/supabase/server";
 
 export const metadata: Metadata = { title: "Comunidad" };
 
 const SECCIONES: Seccion[] = ["arbol", "muro", "mimir", "foro"];
 const hayBase = () => Boolean(process.env.NEXT_PUBLIC_SUPABASE_URL && process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY);
-
-/** Ids de lo que dejó este navegador, para mostrarle el botón de borrar. */
-async function misPublicaciones(): Promise<string[]> {
-  const autor = (await cookies()).get("bifrost-yo")?.value;
-  if (!autor || !hayBase() || !process.env.SUPABASE_SERVICE_ROLE_KEY) return [];
-  const db = createAdminClient();
-  const res = await Promise.all(
-    ["suenos", "experiencias", "reflexiones", "foro"].map((t) => db.from(t).select("id").eq("autor", autor).neq("estado", "oculto")),
-  );
-  return res.flatMap((r) => (r.data ?? []).map((x: { id: string }) => x.id));
-}
 
 async function esEquipo(): Promise<boolean> {
   if (!hayBase()) return false;
@@ -35,7 +22,7 @@ async function esEquipo(): Promise<boolean> {
 export default async function PaginaComunidad({ searchParams }: { searchParams: Promise<{ seccion?: string }> }) {
   const { seccion } = await searchParams;
   const inicial = SECCIONES.includes(seccion as Seccion) ? (seccion as Seccion) : "arbol";
-  const [datos, talleres, mios, equipo] = await Promise.all([comunidadPublica(), talleresPublicados(), misPublicaciones(), esEquipo()]);
+  const [datos, talleres, equipo] = await Promise.all([comunidadPublica(), talleresPublicados(), esEquipo()]);
   const nombres = talleres.map((t) => t.nombre);
 
   return (
@@ -45,7 +32,7 @@ export default async function PaginaComunidad({ searchParams }: { searchParams: 
         titulo="Yggdrasil y sus tres pozos"
         bajada="Colgá tus sueños en Yggdrasil, dejá lo vivido en el pozo de Urd, compartí tus reflexiones en el pozo de Mímir y conversá en Hvergelmir."
       />
-      <Comunidad datos={datos} mios={mios} equipo={equipo} talleres={nombres} inicial={inicial} />
+      <Comunidad datos={datos} equipo={equipo} talleres={nombres} inicial={inicial} />
       <section className="seccion" style={{ paddingTop: 0 }}>
         <div className="ancho">
           <div style={{ padding: 28, borderRadius: 20, background: "var(--bg)", border: "1px solid var(--line)" }}>

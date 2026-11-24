@@ -7,6 +7,7 @@ const LINKS = [
   ["/hlidskjalf/servicios", "Servicios"],
   ["/hlidskjalf/talleres", "Talleres"],
   ["/hlidskjalf/eventos", "Eventos"],
+  ["/hlidskjalf/profesionales", "Profesionales"],
   ["/hlidskjalf/blog", "Blog"],
   ["/hlidskjalf/comunidad", "Comunidad"],
   ["/hlidskjalf/campus", "Campus"],

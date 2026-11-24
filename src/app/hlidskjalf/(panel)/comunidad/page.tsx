@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { requireEquipo } from "@/lib/supabase/equipo";
 import type { EstadoComunidad } from "@/lib/types";
-import { moderar } from "../../acciones";
+import { borrarComunidad, corregirComunidad, moderar } from "../../acciones";
 
 type Fila = { id: string; estado: EstadoComunidad; created_at: string; texto: string; nombre?: string; titulo?: string; taller?: string; tipo?: string; tema?: string };
 
@@ -11,6 +11,9 @@ const SECCIONES = [
   { tabla: "experiencias", nombre: "Experiencias", lugar: "Pozo de Urd", columnas: "id, estado, created_at, nombre, texto, taller, tipo" },
   { tabla: "suenos", nombre: "Sueños", lugar: "Yggdrasil", columnas: "id, estado, created_at, texto" },
 ];
+
+/** Largo máximo de cada texto, igual que en el formulario público. */
+const LARGO: Record<string, number> = { suenos: 60, experiencias: 220, reflexiones: 3000, foro: 2000 };
 
 const ETIQUETA: Record<EstadoComunidad, string> = { publicado: "Publicado", pendiente: "Por aprobar", oculto: "Retirado" };
 
@@ -41,7 +44,7 @@ export default async function ComunidadPanel({ searchParams }: { searchParams: P
     <>
       <h1>Comunidad</h1>
       <p className="apagado">
-        Lo que deja la gente en Yggdrasil, el pozo de Urd y Hvergelmir se publica enseguida; acá podés retirarlo si no respeta las normas.
+        Lo que deja la gente en Yggdrasil, el pozo de Urd y Hvergelmir se publica enseguida; acá podés retirarlo si no respeta las normas, corregir su ortografía o borrarlo para siempre. Quien lo publicó no puede borrarlo.
         Las reflexiones del pozo de Mímir esperan tu aprobación antes de verse.
       </p>
       <div style={{ display: "flex", flexWrap: "wrap", gap: 10, margin: "1rem 0 1.5rem" }}>
@@ -82,9 +85,32 @@ export default async function ComunidadPanel({ searchParams }: { searchParams: P
                 </td>
                 <td>{f.nombre || "—"}</td>
                 <td>{ETIQUETA[f.estado]}</td>
-                <td style={{ whiteSpace: "nowrap" }}>
+                <td id={f.id} style={{ whiteSpace: "nowrap", verticalAlign: "top" }}>
                   {f.estado !== "publicado" && <Boton tabla={actual.tabla} id={f.id} estado="publicado" texto={f.estado === "pendiente" ? "Aprobar" : "Volver a publicar"} />}{" "}
                   {f.estado !== "oculto" && <Boton tabla={actual.tabla} id={f.id} estado="oculto" texto="Retirar" peligro />}
+                  <details style={{ marginTop: 8 }}>
+                    <summary style={{ cursor: "pointer", fontWeight: 600 }}>Corregir o borrar</summary>
+                    <form action={corregirComunidad} className="form" style={{ marginTop: 10, minWidth: 280 }}>
+                      <input type="hidden" name="tabla" value={actual.tabla} />
+                      <input type="hidden" name="id" value={f.id} />
+                      {f.titulo !== undefined && (actual.tabla === "reflexiones" || actual.tabla === "foro") && (
+                        <label>
+                          Título
+                          <input name="titulo" defaultValue={f.titulo} maxLength={200} />
+                        </label>
+                      )}
+                      <label>
+                        Texto
+                        <textarea name="texto" defaultValue={f.texto} required maxLength={LARGO[actual.tabla]} />
+                      </label>
+                      <button className="boton chico">Guardar corrección</button>
+                    </form>
+                    <form action={borrarComunidad} style={{ marginTop: 10 }}>
+                      <input type="hidden" name="tabla" value={actual.tabla} />
+                      <input type="hidden" name="id" value={f.id} />
+                      <button className="boton chico peligro">Borrar para siempre</button>
+                    </form>
+                  </details>
                 </td>
               </tr>
             ))}

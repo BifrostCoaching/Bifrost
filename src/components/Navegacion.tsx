@@ -6,6 +6,7 @@ const LINKS = [
   { href: "/que-hacemos", texto: "Qué hacemos" },
   { href: "/servicios", texto: "Servicios" },
   { href: "/talleres", texto: "Talleres" },
+  { href: "/profesionales", texto: "Profesionales" },
   { href: "/blog", texto: "Blog" },
   { href: "/calendario", texto: "Calendario" },
   { href: "/comunidad", texto: "Comunidad" },

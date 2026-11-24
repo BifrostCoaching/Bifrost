@@ -5,7 +5,7 @@ export const dynamic = "force-dynamic";
 
 /** Todas las tablas del sitio. Si se suma una tabla nueva, agregarla acá. */
 const TABLAS = [
-  "talleres", "eventos", "servicios", "posts", "interesados", "consultas", "ajustes",
+  "talleres", "eventos", "servicios", "profesionales", "posts", "interesados", "consultas", "ajustes",
   "suenos", "experiencias", "reflexiones", "foro", "frases_ratatoskr",
   "espacios", "convocatorias", "participantes", "inscripciones", "modulos", "avances", "agenda", "equipo",
 ];

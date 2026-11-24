@@ -1,7 +1,7 @@
 import "server-only";
 import { createClient } from "@supabase/supabase-js";
 import type { DatosContacto } from "./site";
-import type { Convocatoria, Espacio, Evento, Experiencia, Post, Reflexion, Servicio, Sueno, Taller, TemaForo } from "./types";
+import type { Convocatoria, Espacio, Evento, Experiencia, Post, Profesional, Reflexion, Servicio, Sueno, Taller, TemaForo } from "./types";
 
 /** Cliente de solo lectura para las páginas públicas (sin sesión, respeta RLS). */
 function publico() {
@@ -157,6 +157,21 @@ export async function serviciosPublicados(): Promise<Servicio[]> {
     return [];
   }
   return (data ?? []) as Servicio[];
+}
+
+// ───────── Profesionales ─────────
+export async function profesionalesPublicados(): Promise<Profesional[]> {
+  const db = publico();
+  if (!db) {
+    if (process.env.BIFROST_DEMO !== "1") return [];
+    return [1, 2, 3].map((n) => ({ id: `prof${n}`, nombre: `[PENDIENTE] Profesional ${n}`, oficio: "[PENDIENTE] Oficio", descripcion: "Texto de ejemplo: qué hace y cómo trabaja con Bifröst.", contacto: "", imagen: "", publicado: true, orden: n }));
+  }
+  const { data, error } = await db.from("profesionales").select("*").eq("publicado", true).order("orden").order("nombre");
+  if (error) {
+    console.error("profesionales:", error.message);
+    return [];
+  }
+  return (data ?? []) as Profesional[];
 }
 
 // ───────── Contacto ─────────

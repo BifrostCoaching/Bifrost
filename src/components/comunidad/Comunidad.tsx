@@ -24,11 +24,12 @@ const TABS: [Seccion, string, string][] = [
   ["foro", "Hvergelmir", "· Foro"],
 ];
 
-type Props = { datos: Datos; mios: string[]; equipo: boolean; talleres: string[]; inicial: Seccion };
+type Props = { datos: Datos; equipo: boolean; talleres: string[]; inicial: Seccion };
 
-export function Comunidad({ datos, mios, equipo, talleres, inicial }: Props) {
+export function Comunidad({ datos, equipo, talleres, inicial }: Props) {
   const [tab, setTab] = useState<Seccion>(inicial);
-  const puede = (id: string) => equipo || mios.includes(id);
+  // Solo el equipo puede retirar o corregir lo publicado.
+  const puede = (id: string) => equipo && Boolean(id);
 
   function elegir(s: Seccion) {
     setTab(s);
@@ -42,7 +43,7 @@ export function Comunidad({ datos, mios, equipo, talleres, inicial }: Props) {
       <div className="ancho">
         {equipo && (
           <p className="vacio" style={{ marginBottom: 16, borderStyle: "solid" }}>
-            Modo equipo activo: podés retirar cualquier tema, nenúfar u hoja. Las reflexiones nuevas se aprueban desde el panel.
+            Modo equipo activo: podés retirar cualquier tema, nenúfar u hoja con la ×. Para corregir la ortografía o borrar para siempre, andá a Comunidad en el panel del equipo. Las reflexiones nuevas se aprueban desde el panel.
           </p>
         )}
         <div style={{ display: "flex", flexWrap: "wrap", gap: 10, marginBottom: 40 }} role="group" aria-label="Elegir sección">
@@ -154,7 +155,7 @@ function Yggdrasil({ datos, puede }: { datos: Datos; puede: (id: string) => bool
                   <form action={borrar} style={{ display: "contents" }}>
                     <input type="hidden" name="tabla" value="suenos" />
                     <input type="hidden" name="id" value={h.id} />
-                    <button className="leaf-x" aria-label="Eliminar esta hoja">×</button>
+                    <button className="leaf-x" aria-label="Retirar esta hoja">×</button>
                   </form>
                 )}
               </div>
@@ -263,7 +264,7 @@ function PozoDeUrd({ datos, puede, talleres }: { datos: Datos; puede: (id: strin
           <button className="boton" disabled={enviando}>{enviando ? "Guardando…" : "Dejar mi experiencia"}</button>
           <Aviso estado={estado} />
         </div>
-        <p className="todo apagado" style={{ margin: 0, fontSize: "0.92rem" }}>Podés eliminar lo que dejaste vos desde este mismo navegador. El equipo de Bifröst puede retirar lo que no respete las normas de convivencia.</p>
+        <p className="todo apagado" style={{ margin: 0, fontSize: "0.92rem" }}>Lo que dejás queda publicado. Si necesitás corregir o quitar algo, escribinos: el equipo de Bifröst lo revisa y puede retirar lo que no respete las normas de convivencia.</p>
       </form>
     </>
   );

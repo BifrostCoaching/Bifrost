@@ -2,7 +2,7 @@
 
 Sitio de Bifröst: un puente entre donde estás y donde querés llegar.
 
-Incluye **Inicio**, **Servicios** (Heimdall), **Talleres** (con el botón "Me interesa" para dejar los datos), **Blog**, **Calendario** (con el calendario de Google de Bifröst), **Comunidad** (Yggdrasil y sus tres pozos) y **Hliðskjálf**, el panel del equipo con login. También **Campus** (el espacio de cada participante, con acceso por invitación del equipo) y **Dar por dar** (espacios comunitarios).
+Incluye **Inicio**, **Servicios** (Heimdall), **Talleres**, **Profesionales** (los Vanir) (con el botón "Me interesa" para dejar los datos), **Blog**, **Calendario** (con el calendario de Google de Bifröst), **Comunidad** (Yggdrasil y sus tres pozos) y **Hliðskjálf**, el panel del equipo con login. También **Campus** (el espacio de cada participante, con acceso por invitación del equipo) y **Dar por dar** (espacios comunitarios).
 
 Hecho con Next.js (se publica en Vercel) y Supabase (login y base de datos).
 
@@ -25,7 +25,7 @@ Recomendación: activá la verificación en dos pasos en GitHub, Vercel y Supaba
 
 1. Creá un proyecto en [supabase.com](https://supabase.com) (región São Paulo).
 2. En **SQL Editor**, pegá el contenido de [`supabase/schema.sql`](supabase/schema.sql) y ejecutalo. Crea las tablas, las reglas de seguridad y carga los dos talleres.
-   - Después, pegá y ejecutá también [`supabase/02-blog-comunidad.sql`](supabase/02-blog-comunidad.sql). Crea las tablas del Blog y de la Comunidad. Y por último [`supabase/03-frases-ratatoskr.sql`](supabase/03-frases-ratatoskr.sql), para editar las frases de la ardilla, y [`supabase/04-contacto.sql`](supabase/04-contacto.sql), para cargar los datos de contacto desde el panel, [`supabase/05-dar-por-dar-y-campus.sql`](supabase/05-dar-por-dar-y-campus.sql), para Dar por dar y el Campus, y [`supabase/06-servicios-e-imagenes.sql`](supabase/06-servicios-e-imagenes.sql), para Servicios y las fotos que se suben desde el panel.
+   - Después, pegá y ejecutá también [`supabase/02-blog-comunidad.sql`](supabase/02-blog-comunidad.sql). Crea las tablas del Blog y de la Comunidad. Y por último [`supabase/03-frases-ratatoskr.sql`](supabase/03-frases-ratatoskr.sql), para editar las frases de la ardilla, y [`supabase/04-contacto.sql`](supabase/04-contacto.sql), para cargar los datos de contacto desde el panel, [`supabase/05-dar-por-dar-y-campus.sql`](supabase/05-dar-por-dar-y-campus.sql), para Dar por dar y el Campus, [`supabase/06-servicios-e-imagenes.sql`](supabase/06-servicios-e-imagenes.sql), para Servicios y las fotos que se suben desde el panel, y [`supabase/07-profesionales.sql`](supabase/07-profesionales.sql), para Profesionales.
    - Para el Campus, en **Authentication > URL Configuration** poné como **Site URL** la dirección del sitio (por ejemplo `https://bifrostcoaching.vercel.app`) y sumá en **Redirect URLs** `https://bifrostcoaching.vercel.app/campus/bienvenida`.
    - El script agrega `bifrost1203@gmail.com` como integrante del equipo. Para sumar a alguien más: `insert into equipo (email, nombre) values ('email@ejemplo.com', 'Nombre');`
 3. En **Authentication > Sign In / Providers**, desactivá **Allow new users to sign up** (así nadie puede crearse una cuenta solo).
@@ -59,6 +59,7 @@ Entrás desde el pie del sitio (**Ingreso del equipo**) o en `/hlidskjalf`.
 
 - **Servicios**: los servicios directos de Bifröst, aparte de los talleres, con sus fotos.
 - **Talleres**: creás o editás talleres, subís, ordenás o quitás sus fotos y elegís cuáles se ven en el sitio.
+- **Profesionales**: los Vanir, con nombre, oficio, descripción, contacto y foto.
 - **Eventos**: actividades sueltas que aparecen en el Calendario, con una foto opcional.
 - **Interesados**: quién tocó "Me interesa" y en qué taller. El equipo de ventas marca a cada persona como contactada, inscripta o descartada, y puede dejar notas.
 - **Consultas**: los mensajes del formulario de contacto.
@@ -66,7 +67,7 @@ Entrás desde el pie del sitio (**Ingreso del equipo**) o en `/hlidskjalf`.
 - **Campus**: das acceso a cada participante (se genera un link para mandarle por WhatsApp o email), confirmás inscripciones y cargás los módulos de cada taller con sus clases y materiales. Desde **Interesados** también hay un atajo "Dar acceso al campus".
 - **Dar por dar**: publicás los espacios comunitarios que llegan por el formulario y cargás sus convocatorias.
 - **Blog**: escribís artículos. Quedan como borrador hasta que tildás "Publicado en el sitio".
-- **Comunidad**: lo que deja la gente en Yggdrasil, el pozo de Urd y Hvergelmir se publica enseguida; desde acá lo retirás si no respeta las normas. Las reflexiones del pozo de Mímir esperan que las apruebes. Ahí también está **Frases de Ratatoskr**, para cambiar lo que dice la ardilla.
+- **Comunidad**: lo que deja la gente en Yggdrasil, el pozo de Urd y Hvergelmir se publica enseguida; desde acá lo retirás si no respeta las normas, corregís la ortografía o lo borrás para siempre. Quien lo publicó no puede borrarlo. Las reflexiones del pozo de Mímir esperan que las apruebes. Ahí también está **Frases de Ratatoskr**, para cambiar lo que dice la ardilla.
 - **Respaldo**: descarga un archivo con todos los datos del sitio. Conviene bajarlo una vez por mes y guardarlo en un Drive privado (tiene datos personales).
 
 Las fotos se achican solas en el navegador antes de subirse (JPG, PNG o WEBP). Se guardan en la carpeta pública `imagenes` de Supabase Storage; solo el servidor del sitio puede subir o borrar ahí, y lo hace después de comprobar que quien lo pide es del equipo. Los textos de Inicio y Qué hacemos, y las fotos de portada, todavía se cambian en el código.
