@@ -144,3 +144,52 @@ export async function marcarConsulta(fd: FormData) {
   await supabase.from("consultas").update({ leida: fd.get("leida") === "1" }).eq("id", txt(fd, "id", 60));
   revalidatePath("/hlidskjalf/consultas");
 }
+
+// ───────── Blog ─────────
+
+export async function guardarPost(_prev: EstadoPanel, fd: FormData): Promise<EstadoPanel> {
+  const { supabase } = await requireEquipo();
+  const id = txt(fd, "id", 60);
+  const titulo = txt(fd, "titulo", 200);
+  if (!titulo) return { ok: false, mensaje: "El artículo necesita un título." };
+  const fila = {
+    titulo,
+    slug: slugify(txt(fd, "slug", 80) || titulo),
+    tema: txt(fd, "tema", 60) || "Lenguaje",
+    resumen: txt(fd, "resumen", 600),
+    texto: txt(fd, "texto", 60000),
+    fecha: fechaONull(fd, "fecha") ?? new Date().toISOString().slice(0, 10),
+    publicado: fd.get("publicado") === "on",
+  };
+  const { data, error } = id
+    ? await supabase.from("posts").update(fila).eq("id", id).select("id").single()
+    : await supabase.from("posts").insert(fila).select("id").single();
+  if (error) {
+    const msj = error.code === "23505" ? "Ya hay otro artículo con esa dirección (slug). Cambiala." : error.message;
+    return { ok: false, mensaje: `No se pudo guardar: ${msj}` };
+  }
+  revalidarSitio();
+  if (!id) redirect(`/hlidskjalf/blog/${data.id}?guardado=1`);
+  return { ok: true, mensaje: fila.publicado ? "Guardado. Ya se ve en el blog." : "Guardado como borrador." };
+}
+
+export async function borrarPost(fd: FormData) {
+  const { supabase } = await requireEquipo();
+  await supabase.from("posts").delete().eq("id", txt(fd, "id", 60));
+  revalidarSitio();
+  redirect("/hlidskjalf/blog");
+}
+
+// ───────── Comunidad ─────────
+
+const TABLAS_COMUNIDAD = ["suenos", "experiencias", "reflexiones", "foro"];
+
+export async function moderar(fd: FormData) {
+  const { supabase } = await requireEquipo();
+  const tabla = txt(fd, "tabla", 20);
+  const estado = txt(fd, "estado", 20);
+  if (!TABLAS_COMUNIDAD.includes(tabla) || !["publicado", "pendiente", "oculto"].includes(estado)) return;
+  await supabase.from(tabla).update({ estado }).eq("id", txt(fd, "id", 60));
+  revalidatePath("/comunidad");
+  revalidatePath("/hlidskjalf/comunidad");
+}

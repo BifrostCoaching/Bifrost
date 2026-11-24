@@ -6,6 +6,8 @@ const LINKS = [
   ["/hlidskjalf", "Resumen"],
   ["/hlidskjalf/talleres", "Talleres"],
   ["/hlidskjalf/eventos", "Eventos"],
+  ["/hlidskjalf/blog", "Blog"],
+  ["/hlidskjalf/comunidad", "Comunidad"],
   ["/hlidskjalf/interesados", "Interesados"],
   ["/hlidskjalf/consultas", "Consultas"],
 ];

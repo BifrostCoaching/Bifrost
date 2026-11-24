@@ -1,6 +1,6 @@
 import "server-only";
 import { createClient } from "@supabase/supabase-js";
-import type { Evento, Taller } from "./types";
+import type { Evento, Experiencia, Post, Reflexion, Sueno, Taller, TemaForo } from "./types";
 
 /** Cliente de solo lectura para las páginas públicas (sin sesión, respeta RLS). */
 function publico() {
@@ -59,4 +59,79 @@ export async function eventosPublicados(): Promise<Evento[]> {
     return [];
   }
   return (data ?? []) as Evento[];
+}
+
+// ───────── Blog ─────────
+
+const DEMO_POSTS: Post[] = [
+  ["El lenguaje no describe: genera", "Lenguaje"],
+  ["Lo que la emoción hace posible", "Emociones"],
+  ["Liderar es abrir posibilidades", "Liderazgo"],
+  ["Todo comunica, incluso el silencio", "Sistemas"],
+  ["Lo que tu ropa dice antes que vos", "Imagen"],
+  ["Un presupuesto también es una conversación", "Presupuesto"],
+].map(([titulo, tema], i) => ({
+  id: `demo-p${i}`, slug: `demo-${i}`, titulo, tema, resumen: "Artículo de ejemplo. Acá va el comienzo del texto, con dos o tres líneas que inviten a seguir leyendo.",
+  texto: "Texto de ejemplo.", publicado: true, fecha: "2026-11-24",
+}));
+
+export async function postsPublicados(): Promise<Post[]> {
+  const db = publico();
+  if (!db) return process.env.BIFROST_DEMO === "1" ? DEMO_POSTS : [];
+  const { data, error } = await db.from("posts").select("*").eq("publicado", true).order("fecha", { ascending: false });
+  if (error) {
+    console.error("posts:", error.message);
+    return [];
+  }
+  return (data ?? []) as Post[];
+}
+
+export async function postPorSlug(slug: string): Promise<Post | null> {
+  const db = publico();
+  if (!db) return process.env.BIFROST_DEMO === "1" ? (DEMO_POSTS.find((p) => p.slug === slug) ?? null) : null;
+  const { data } = await db.from("posts").select("*").eq("slug", slug).eq("publicado", true).maybeSingle();
+  return (data as Post) ?? null;
+}
+
+// ───────── Comunidad ─────────
+export type Comunidad = { suenos: Sueno[]; experiencias: Experiencia[]; reflexiones: Reflexion[]; foro: TemaForo[] };
+
+const DEMO_COMUNIDAD: Comunidad = {
+  suenos: ["[el sueño de alguien de la comunidad]", "[otro sueño]", "[otro sueño]", "[otro sueño]"].map((texto, i) => ({ id: `s${i}`, texto, estado: "publicado", created_at: "" })),
+  experiencias: [
+    ["Lo que me llevé", "Vestirse también es comunicar", "[PENDIENTE] Lo que esta persona escribió en su nota."],
+    ["Lo que cambió después", "El presupuesto como conversación", "[PENDIENTE] Lo que esta persona escribió en su nota."],
+    ["Una palabra para el taller", "Vestirse también es comunicar", "[PENDIENTE] Una nota más larga: lo que vivió en el taller, cómo se sintió y qué resultado concreto logró después de los encuentros."],
+    ["Mi resultado", "Vestirse también es comunicar", "[PENDIENTE] Lo que esta persona escribió en su nota."],
+  ].map(([tipo, taller, texto], i) => ({ id: `e${i}`, nombre: "[Nombre]", taller, tipo, texto, estado: "publicado", created_at: "" })),
+  reflexiones: [
+    ["[PENDIENTE] Reflexión de ejemplo", "[PENDIENTE] Acá va la reflexión que compartió una persona de la comunidad."],
+    ["[PENDIENTE] Otra reflexión de ejemplo", "[PENDIENTE] Lo que esta persona pensó después de un taller o una conversación."],
+    ["[PENDIENTE] Una tercera reflexión", "[PENDIENTE] Una idea, una pregunta o algo que se llevó."],
+  ].map(([titulo, texto], i) => ({ id: `r${i}`, nombre: "[Nombre]", titulo, texto, estado: "publicado", created_at: "" })),
+  foro: [
+    ["Imagen", "¿Qué te pasa cuando te mirás al espejo?"],
+    ["Presupuesto", "¿Cómo hablan de plata en tu casa?"],
+    ["Liderazgo", "Liderar sin tener un cargo"],
+    ["Emociones", "Las emociones que nos frenan antes de empezar"],
+    ["General", "Presentate: ¿desde dónde llegás a Bifröst?"],
+  ].map(([tema, titulo], i) => ({ id: `f${i}`, tema, nombre: "[Nombre]", titulo, texto: "", estado: "publicado", created_at: "" })),
+};
+
+export async function comunidadPublica(): Promise<Comunidad> {
+  const db = publico();
+  if (!db) return process.env.BIFROST_DEMO === "1" ? DEMO_COMUNIDAD : { suenos: [], experiencias: [], reflexiones: [], foro: [] };
+  const [s, e, r, f] = await Promise.all([
+    db.from("suenos").select("id, texto, estado, created_at").eq("estado", "publicado").order("created_at").limit(66),
+    db.from("experiencias").select("id, nombre, taller, tipo, texto, estado, created_at").eq("estado", "publicado").order("created_at", { ascending: false }).limit(60),
+    db.from("reflexiones").select("id, nombre, titulo, texto, estado, created_at").eq("estado", "publicado").order("created_at").limit(500),
+    db.from("foro").select("id, tema, nombre, titulo, texto, estado, created_at").eq("estado", "publicado").order("created_at", { ascending: false }).limit(60),
+  ]);
+  for (const x of [s, e, r, f]) if (x.error) console.error("comunidad:", x.error.message);
+  return {
+    suenos: (s.data ?? []) as Sueno[],
+    experiencias: (e.data ?? []) as Experiencia[],
+    reflexiones: (r.data ?? []) as Reflexion[],
+    foro: (f.data ?? []) as TemaForo[],
+  };
 }

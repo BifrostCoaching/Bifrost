@@ -12,3 +12,6 @@ export const CONTACTO = {
   whatsapp: "[PENDIENTE]",
   instagram: "[PENDIENTE]",
 };
+
+/** Temas del blog, en el orden en que aparecen los filtros. */
+export const TEMAS_BLOG = ["Lenguaje", "Emociones", "Liderazgo", "Sistemas", "Imagen", "Presupuesto"];

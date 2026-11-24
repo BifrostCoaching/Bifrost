@@ -52,3 +52,20 @@ export type Consulta = {
   leida: boolean;
   created_at: string;
 };
+
+export type Post = {
+  id: string;
+  slug: string;
+  titulo: string;
+  tema: string;
+  resumen: string;
+  texto: string;
+  publicado: boolean;
+  fecha: string;
+};
+
+export type EstadoComunidad = "publicado" | "pendiente" | "oculto";
+export type Sueno = { id: string; texto: string; estado: EstadoComunidad; created_at: string; autor?: string };
+export type Experiencia = { id: string; nombre: string; taller: string; tipo: string; texto: string; estado: EstadoComunidad; created_at: string; autor?: string };
+export type Reflexion = { id: string; nombre: string; titulo: string; texto: string; estado: EstadoComunidad; created_at: string; autor?: string };
+export type TemaForo = { id: string; tema: string; nombre: string; titulo: string; texto: string; estado: EstadoComunidad; created_at: string; autor?: string };
