@@ -1,6 +1,8 @@
 "use server";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
+import { SITE_URL } from "@/lib/site";
+import { createAdminClient } from "@/lib/supabase/admin";
 import { createClient } from "@/lib/supabase/server";
 import { requireEquipo } from "@/lib/supabase/equipo";
 import { slugify } from "@/lib/format";
@@ -231,4 +233,164 @@ export async function guardarContacto(_prev: EstadoPanel, fd: FormData): Promise
   if (error) return { ok: false, mensaje: `No se pudo guardar: ${error.message}` };
   revalidarSitio();
   return { ok: true, mensaje: "Guardado. Ya se ve en el sitio." };
+}
+
+// ───────── Dar por dar ─────────
+
+const TIPOS_ESPACIO_OK = ["Refugios de animales", "Medioambiente", "Comedores", "Educación", "Salud", "Otro"];
+
+function revalidarDar() {
+  revalidatePath("/dar-por-dar");
+  revalidatePath("/hlidskjalf/dar-por-dar");
+}
+
+export async function guardarEspacio(fd: FormData) {
+  const { supabase } = await requireEquipo();
+  const id = txt(fd, "id", 60);
+  const nombre = txt(fd, "nombre", 120);
+  if (!nombre) return;
+  const tipo = txt(fd, "tipo", 40);
+  const estado = txt(fd, "estado", 20);
+  const fila = {
+    nombre,
+    tipo: TIPOS_ESPACIO_OK.includes(tipo) ? tipo : "Otro",
+    zona: txt(fd, "zona", 120),
+    contacto: txt(fd, "contacto", 200),
+    descripcion: txt(fd, "descripcion", 1500),
+    estado: ["publicado", "pendiente", "oculto"].includes(estado) ? estado : "publicado",
+  };
+  if (id) await supabase.from("espacios").update(fila).eq("id", id);
+  else await supabase.from("espacios").insert(fila);
+  revalidarDar();
+}
+
+export async function borrarEspacio(fd: FormData) {
+  const { supabase } = await requireEquipo();
+  await supabase.from("espacios").delete().eq("id", txt(fd, "id", 60));
+  revalidarDar();
+}
+
+export async function guardarConvocatoria(fd: FormData) {
+  const { supabase } = await requireEquipo();
+  const id = txt(fd, "id", 60);
+  const titulo = txt(fd, "titulo", 200);
+  const espacio_id = txt(fd, "espacio_id", 60);
+  if (!titulo || !espacio_id) return;
+  const fila = {
+    titulo,
+    espacio_id,
+    inicio: fechaONull(fd, "inicio"),
+    fin: fechaONull(fd, "fin"),
+    necesita: txt(fd, "necesita", 600),
+    publicado: fd.get("publicado") === "on",
+  };
+  if (id) await supabase.from("convocatorias").update(fila).eq("id", id);
+  else await supabase.from("convocatorias").insert(fila);
+  revalidarDar();
+}
+
+export async function borrarConvocatoria(fd: FormData) {
+  const { supabase } = await requireEquipo();
+  await supabase.from("convocatorias").delete().eq("id", txt(fd, "id", 60));
+  revalidarDar();
+}
+
+// ───────── Campus ─────────
+
+export type EstadoAcceso = { ok: boolean; mensaje: string; link?: string } | null;
+
+function revalidarCampus() {
+  revalidatePath("/campus");
+  revalidatePath("/hlidskjalf/campus");
+}
+
+/**
+ * Crea (o renueva) el acceso de una persona al campus y devuelve un link para mandarle por WhatsApp o email.
+ * El link la lleva a elegir su contraseña. No se manda ningún mail automático.
+ */
+export async function darAcceso(_prev: EstadoAcceso, fd: FormData): Promise<EstadoAcceso> {
+  const { supabase } = await requireEquipo();
+  const email = txt(fd, "email", 200).toLowerCase();
+  const nombre = txt(fd, "nombre", 120);
+  const tallerId = txt(fd, "taller_id", 60);
+  const estado = txt(fd, "estado", 20) === "confirmada" ? "confirmada" : "pendiente";
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) return { ok: false, mensaje: "Revisá el email." };
+
+  const admin = createAdminClient();
+  const redirectTo = `${SITE_URL}/campus/bienvenida`;
+  let res = await admin.auth.admin.generateLink({ type: "invite", email, options: { redirectTo } });
+  if (res.error) {
+    // Si ya tiene usuario, se genera un link para que elija una contraseña nueva.
+    res = await admin.auth.admin.generateLink({ type: "recovery", email, options: { redirectTo } });
+  }
+  if (res.error || !res.data.user) return { ok: false, mensaje: `No se pudo crear el acceso: ${res.error?.message ?? "error desconocido"}` };
+
+  const userId = res.data.user.id;
+  const { data: previo } = await supabase.from("participantes").select("nombre").eq("id", userId).maybeSingle();
+  const { error: e1 } = await supabase
+    .from("participantes")
+    .upsert({ id: userId, email, nombre: nombre || previo?.nombre || "" }, { onConflict: "id" });
+  if (e1) return { ok: false, mensaje: `No se pudo guardar la persona: ${e1.message}` };
+  if (tallerId) {
+    const { error: e2 } = await supabase
+      .from("inscripciones")
+      .upsert({ participante_id: userId, taller_id: tallerId, estado }, { onConflict: "participante_id,taller_id" });
+    if (e2) return { ok: false, mensaje: `Se creó el acceso, pero no la inscripción: ${e2.message}` };
+  }
+  revalidarCampus();
+  return {
+    ok: true,
+    mensaje: `Listo. Mandale este link a ${nombre || email} (sirve una sola vez y vence en 24 horas):`,
+    link: res.data.properties.action_link,
+  };
+}
+
+export async function cambiarInscripcion(fd: FormData) {
+  const { supabase } = await requireEquipo();
+  const estado = txt(fd, "estado", 20);
+  if (!["pendiente", "confirmada", "cancelada"].includes(estado)) return;
+  await supabase.from("inscripciones").update({ estado }).eq("id", txt(fd, "id", 60));
+  revalidarCampus();
+}
+
+export async function agregarInscripcion(fd: FormData) {
+  const { supabase } = await requireEquipo();
+  const participante_id = txt(fd, "participante_id", 60);
+  const taller_id = txt(fd, "taller_id", 60);
+  if (!participante_id || !taller_id) return;
+  await supabase.from("inscripciones").upsert({ participante_id, taller_id, estado: "confirmada" }, { onConflict: "participante_id,taller_id" });
+  revalidarCampus();
+}
+
+export async function quitarAcceso(fd: FormData) {
+  const { supabase } = await requireEquipo();
+  const id = txt(fd, "id", 60);
+  await supabase.from("participantes").delete().eq("id", id);
+  // También se borra su usuario, para que el link o la contraseña dejen de servir.
+  await createAdminClient().auth.admin.deleteUser(id);
+  revalidarCampus();
+}
+
+export async function guardarModulo(fd: FormData) {
+  const { supabase } = await requireEquipo();
+  const id = txt(fd, "id", 60);
+  const titulo = txt(fd, "titulo", 200);
+  const taller_id = txt(fd, "taller_id", 60);
+  if (!titulo || !taller_id) return;
+  const fila = {
+    taller_id,
+    titulo,
+    numero: Number.parseInt(txt(fd, "numero", 4) || "1", 10) || 1,
+    clases: txt(fd, "clases", 5000),
+    materiales: txt(fd, "materiales", 5000),
+  };
+  if (id) await supabase.from("modulos").update(fila).eq("id", id);
+  else await supabase.from("modulos").insert(fila);
+  revalidarCampus();
+}
+
+export async function borrarModulo(fd: FormData) {
+  const { supabase } = await requireEquipo();
+  await supabase.from("modulos").delete().eq("id", txt(fd, "id", 60));
+  revalidarCampus();
 }

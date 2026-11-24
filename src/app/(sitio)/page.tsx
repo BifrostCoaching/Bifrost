@@ -9,8 +9,6 @@ export const revalidate = 60;
 
 const PRONTO = [
   { titulo: "Profesionales", texto: "Coaches, asesores de imagen, contadores y otros profesionales que trabajan con Bifröst." },
-  { titulo: "Campus", texto: "Tu espacio personal: tu árbol de propósitos, tu agenda y tus talleres." },
-  { titulo: "Dar por dar", texto: "Espacios comunitarios que se suman: refugios, comedores, grupos ambientales y más." },
 ];
 
 export default async function Inicio() {
@@ -69,6 +67,8 @@ export default async function Inicio() {
             <Tarjeta href="/blog" titulo="Blog" texto="Pensamientos sobre lenguaje, emociones, liderazgo y aprendizaje." />
             <Tarjeta href="/calendario" titulo="Calendario" texto="Las próximas fechas y la proyección del año." />
             <Tarjeta href="/comunidad" titulo="Comunidad" texto="El foro para conversar y el muro donde cada persona cuenta lo que vivió." />
+            <Tarjeta href="/campus" titulo="Campus" texto="Tu espacio personal: tu bosque de talleres, tu agenda y tus talleres." />
+            <Tarjeta href="/dar-por-dar" titulo="Dar por dar" texto="Espacios comunitarios que se suman: refugios, comedores, grupos ambientales y más." />
             {PRONTO.map((p) => (
               <div key={p.titulo} className="card-link en-bg pronto">
                 <span className="titulo">{p.titulo}</span>

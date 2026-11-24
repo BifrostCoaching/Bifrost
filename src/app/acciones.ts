@@ -53,3 +53,25 @@ export async function registrarInteres(_prev: EstadoForm, fd: FormData): Promise
   }
   return { ok: true, mensaje: `¡Gracias, ${nombre}! Ya tenemos tus datos. Alguien del equipo de Bifröst te va a contactar para contarte todo y reservar tu lugar.` };
 }
+
+const TIPOS_OK = ["Refugios de animales", "Medioambiente", "Comedores", "Educación", "Salud", "Otro"];
+
+export async function sumarEspacio(_prev: EstadoForm, fd: FormData): Promise<EstadoForm> {
+  if (texto(fd, "sitio_web", 200)) return { ok: true, mensaje: "¡Gracias! Recibimos los datos del espacio." };
+  const nombre = texto(fd, "nombre", 120);
+  const tipo = texto(fd, "tipo", 40);
+  const zona = texto(fd, "zona", 120);
+  const contacto = texto(fd, "contacto", 200);
+  const descripcion = texto(fd, "descripcion", 1500);
+  if (!nombre || !contacto) return { ok: false, mensaje: "Completá el nombre del espacio y un contacto." };
+  try {
+    const { error } = await createAdminClient()
+      .from("espacios")
+      .insert({ nombre, tipo: TIPOS_OK.includes(tipo) ? tipo : "Otro", zona, contacto, descripcion, estado: "pendiente" });
+    if (error) throw error;
+  } catch (e) {
+    console.error("espacio:", e);
+    return { ok: false, mensaje: "No pudimos guardar los datos. Probá de nuevo en un rato." };
+  }
+  return { ok: true, mensaje: `¡Gracias! Recibimos los datos de ${nombre}. El equipo de Bifröst lo revisa y lo publica en la lista.` };
+}

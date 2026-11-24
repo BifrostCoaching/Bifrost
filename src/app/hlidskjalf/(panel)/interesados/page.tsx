@@ -52,6 +52,13 @@ export default async function InteresadosPanel() {
                       {i.telefono}
                     </>
                   )}
+                  <br />
+                  <a
+                    href={`/hlidskjalf/campus?${new URLSearchParams({ email: i.email, nombre: i.nombre, taller: i.taller_id ?? "", estado: i.estado === "inscripto" ? "confirmada" : "pendiente" })}#acceso`}
+                    style={{ fontSize: "0.9rem", fontWeight: 600 }}
+                  >
+                    Dar acceso al campus →
+                  </a>
                   {i.comentario && (
                     <p className="apagado preline" style={{ margin: "0.4rem 0 0", fontSize: "0.9rem" }}>
                       “{i.comentario}”

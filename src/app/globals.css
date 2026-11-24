@@ -27,7 +27,7 @@ body {
   line-height: 1.6;
   transition: background-color 0.4s ease, color 0.4s ease;
 }
-h1, h2, h3, .titulo { font-family: var(--font-titulos), var(--font-texto), system-ui, sans-serif; }
+h1, h2, h3, .titulo, .h { font-family: var(--font-titulos), var(--font-texto), system-ui, sans-serif; }
 a { color: var(--green-text); }
 a:hover { color: var(--text); }
 a:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-visible, button:focus-visible {
