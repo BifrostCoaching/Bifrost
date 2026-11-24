@@ -2,7 +2,7 @@
 import { useActionState } from "react";
 import { guardarContacto, type EstadoPanel } from "../../acciones";
 
-export function FormContactoPanel({ email, whatsapp, instagram, linkedin }: { email: string; whatsapp: string; instagram: string; linkedin: string }) {
+export function FormContactoPanel({ email, whatsapp, instagram, linkedin, youtube }: { email: string; whatsapp: string; instagram: string; linkedin: string; youtube: string }) {
   const [estado, accion, guardando] = useActionState<EstadoPanel, FormData>(guardarContacto, null);
   return (
     <form action={accion} className="form caja">
@@ -21,6 +21,10 @@ export function FormContactoPanel({ email, whatsapp, instagram, linkedin }: { em
       <label>
         LinkedIn <small>(pegá el link de la página, por ejemplo https://www.linkedin.com/company/bifrost)</small>
         <input name="linkedin" defaultValue={linkedin} placeholder="https://www.linkedin.com/company/..." />
+      </label>
+      <label>
+        YouTube <small>(el link del canal o el usuario con @; si lo dejás vacío, no aparece)</small>
+        <input name="youtube" defaultValue={youtube} placeholder="https://www.youtube.com/@bifrost" />
       </label>
       {estado && <p className={`aviso ${estado.ok ? "" : "error"}`} role="status">{estado.mensaje}</p>}
       <div>

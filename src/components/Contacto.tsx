@@ -17,6 +17,7 @@ export async function Contacto() {
   const wa = c.whatsapp.replace(/\D/g, "");
   const ig = c.instagram.replace(/^@/, "").replace(/^https?:\/\/(www\.)?instagram\.com\//, "").replace(/\/$/, "");
   const li = /^https?:\/\//.test(c.linkedin) ? c.linkedin : `https://www.linkedin.com/${c.linkedin.replace(/^\/+/, "")}`;
+  const yt = /^https?:\/\//.test(c.youtube) ? c.youtube : `https://www.youtube.com/${c.youtube.startsWith("@") ? c.youtube : `@${c.youtube.replace(/^\/+/, "")}`}`;
   return (
     <section id="contacto" className="seccion sup borde">
       <div className="ancho">
@@ -41,6 +42,11 @@ export async function Contacto() {
               <li>
                 LinkedIn: <Dato valor={c.linkedin} href={li} texto={c.linkedin.replace(/^https?:\/\/(www\.)?linkedin\.com\/(company\/|in\/)?/, "").replace(/\/$/, "")} />
               </li>
+              {c.youtube && (
+                <li>
+                  YouTube: <Dato valor={c.youtube} href={yt} texto={c.youtube.replace(/^https?:\/\/(www\.)?youtube\.com\//, "").replace(/\/$/, "")} />
+                </li>
+              )}
             </ul>
           </div>
         </FormContacto>
